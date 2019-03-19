@@ -29,7 +29,7 @@ in the Arch wiki.
 1. Download the setup script
 
    ```
-   curl -L -O https://raw.github.com/pbrisbin/arch-setup/install
+   curl -L -O https://raw.githubusercontent.com/pbrisbin/arch-setup/master/install
    chmod +x ./install
    ```
 
