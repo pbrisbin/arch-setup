@@ -44,13 +44,14 @@ in the Arch wiki.
    export INSTALL_SWAP_SIZE=16G         # valid argument to fallocate
    ```
 
-1. Be prepared to log passwords
+1. Be prepared to remember passwords
 
-   This script prompts for 3 passwords:
+   This script prompts for 4 passwords:
 
    - Encrypted `/` key
    - `root` user password
    - non-`root` user password
+   - SSH key passphrase
 
    Be prepared to write these somewhere as you enter them. My own trick is to
    use https://passphrase-me.herokuapp.com on a nearby machine and leave the
