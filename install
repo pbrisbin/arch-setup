@@ -1,0 +1,246 @@
+#!/bin/sh
+set -e
+
+# Needed inputs
+: "${INSTALL_DISK:=/dev/nvme0n1}"
+: "${INSTALL_HOSTNAME:=leo}"
+: "${INSTALL_EN:=enp0s31f6}"
+: "${INSTALL_WLAN:=wlp61s0}"
+: "${INSTALL_USER:=patrick}"
+: "${INSTALL_SWAP_SIZE:=24G}"
+
+case "$1" in
+  disks)
+    timedatectl set-ntp true
+
+    echo "TODO: gdisk step is not automated yet. Sorry."
+    echo
+    echo "Please do the following, once gdisk opens:"
+    echo
+    echo "  o: for new GPT"
+    echo "  n: for /boot (EFI), +512M end, EF00 type"
+    echo "  n: for /, defaults"
+    echo
+    echo "Press enter when ready."
+    read -r
+
+    gdisk "$INSTALL_DISK"
+    mkfs.fat -F32 "${INSTALL_DISK}1"
+
+    echo "Setting password for / encryption"
+    cryptsetup -y -v luksFormat "${INSTALL_DISK}2"
+    cryptsetup open "${INSTALL_DISK}2" cryptroot
+    mkfs.ext4 /dev/mapper/cryptroot
+
+    mount /dev/mapper/cryptroot /mnt
+    mkdir /mnt/boot
+    mount "${INSTALL_DISK}1" /mnt/boot
+
+    pacstrap /mnt base
+    genfstab -U /mnt >>/mnt/etc/fstab
+
+    cp "$0" /mnt/root/
+    echo "Please now \`arch-chroot /mnt' and \`./install system'."
+    ;;
+
+  system)
+    # Timezone
+    ln -sf /usr/share/zoneinfo/America/New_York /etc/localtime
+    hwclock --systohc
+
+    # Locale
+    sed -i 's/^#\(en_US.UTF-8\)/\1/' /etc/locale.gen
+    local-gen
+    echo 'LANG=en_US.UTF-8' >/etc/locale.conf
+
+    # Hostname
+    echo "$INSTALL_HOSTNAME" >/etc/hostname
+    cat <<EOM >/etc/hosts
+# Static table lookup for hostnames.
+# See hosts(5) for details.
+127.0.0.1 localhost.localdomain localhost
+::1       localhost.localdomain localhost
+
+$INSTALL_HOSTNAME $INSTALL_HOSTNAME.localdomain localhost
+EOM
+
+    # Boot
+    sed -i 's/ filesystems / encrypt filesystems /' /etc/mkinitcpio.conf
+    mkinitcpio -p linux
+    bootctl --path=/boot install
+    cat >/boot/loader/loader.conf <<EOM
+default arch
+timeout 3
+editor 0
+EOM
+
+    uuid=$(blkid "${INSTALL_DISK}2" -s UUID | cut -f\" -d 2)
+
+    cat >/boot/loader/entries/arch.conf <<EOM
+title Arch Linux
+linux /vmlinuz-linux
+initrd /initramfs-linux.img
+options cryptdevice=UUID=$uuid:cryptroot root=/dev/mapper/cryptroot rw
+EOM
+
+    pacman -S --needed intel-ucode
+
+    # Swap
+    fallocate -l "$INSTALL_SWAP_SIZE" /swapfile
+    chmod 600 /swapfile
+    mkswap /swapfile
+    swapon /swapfile
+    echo '/swapfile swap swap defaults 0 0' >>/etc/fstab
+
+    # Networking
+    pacman -S --needed wpa_supplicant wpa_actiond dialog ifplugd
+    systemctl enable "netctl-auto@$INSTALL_WLAN"
+    systemctl enable "netctl-ifplugd@$INSTALL_EN"
+    cat >"/etc/netctl/${INSTALL_EN}-ethernet" <<EOM
+Description='DHCP ethernet connection'
+Interface=$INSTALL_EN
+Connection=ethernet
+IP=dhcp
+EOM
+
+    echo "Setting password for root user"
+    passwd
+
+    # Setup nonroot user
+    pacman -S --needed \
+      base-devel \
+      grml-zsh-config \
+      neovim \
+      sudo \
+      zsh
+
+    echo '%wheel ALL=(ALL) NOPASSWD:ALL' >etc/sudoers.d/100-wheel
+
+    ln -s /usr/bin/nvim /usr/local/bin/vim
+    chsh -s /bin/zsh
+    useradd -m -G wheel -s /bin/zsh "$INSTALL_USER"
+
+    echo "Setting password for $INSTALL_USER"
+    passwd "$INSTALL_USER"
+
+    # Setup for next stage
+    cp install "/home/$INSTALL_USER/"
+    chown "$INSTALL_USER:$INSTALL_USER" "/home/$INSTALL_USER/install"
+    echo "Please now \`exit; umount -R /mnt; reboot'."
+    echo "Then log in as $INSTALL_USER and \`./install user'."
+    ;;
+
+  user)
+    # Bootstrap Aurget
+    curl -L -O https://files.pbrisbin.com/bin/aur
+    chmod +x aur
+    ./aur aurget
+    rm aur
+
+    # X
+    sudo pacman -S --needed \
+      xorg \
+      xorg-xinit \
+      xf86-video-intel \
+      xf86-input-synaptics \
+      xterm \
+      ttf-dejavu \
+      chromium \
+      gmrun \
+      dmenu
+
+    sudo tee /etc/X11/xorg.conf.d/10-keyboard.conf <<EOM
+Section "InputClass"
+  Identifier "Keyboard Defaults"
+  MatchIsKeyboard "yes"
+  Option "XkbOptions" "ctrl:nocaps"
+EndSection
+EOM
+
+    # XMonad
+    aurget -S stack-static
+    stack setup
+    stack install xmonad xmonad-contrib
+
+    # ACPID
+    sudo pacman -S --needed acpid acpi hdparm sdparm wireless_tools
+    sudo systemctl enable acpid
+    sudo systemctl start acpid
+    aurget -S laptop-mode-tools
+    sudo systemctl enable laptop-mode
+    sudo systemctl start laptop-mode
+
+    # Docker
+    sudo pacman -S --needed docker docker-compose docker-machine
+    sudo tee /etc/systemd/system/docker.service.d/override.conf <<EOM
+[Service]
+ExecStart=
+ExecStart=/usr/bin/dockerd -H fd:// -s overlay2
+EOM
+    sudo systemctl enable docker
+    sudo systemctl start docker
+    sudo gpasswd -a "$INSTALL_USER" docker
+
+    # Other packages
+    pacman -S --needed \
+      alsa-utils \
+      aws-cli \
+      dunst \
+      fcron \
+      fzf \
+      git \
+      gnupg \
+      hdparm \
+      htop \
+      hub \
+      isync \
+      jre-openjdk-headless \
+      msmtp \
+      mutt \
+      openssh \
+      pass \
+      postgresql-libs \
+      ruby \
+      rxvt-unicode \
+      shfmt \
+      slock \
+      truecrypt \
+      urxvt-perls \
+      weechat \
+      wget \
+      xautolock \
+      xclip \
+      xdotool \
+      zsh
+
+    aurget -S \
+      browserpass \
+      rcm \
+      zoom
+
+    # Dotfiles
+    echo "Setting password for $INSTALL_USER@$INSTALL_HOSTNAME SSH key"
+    ssh-key-gen -t rs -b 4096
+    ssh-add
+    echo
+    echo "Don't forget to add this in pass when we're all done."
+
+    curl -F 'sprunge=<-' http://sprunge.us <~/.ssh/id_rsa.pub
+    echo "Install this key in GitHub/GitLab. Then enter to continue."
+    read -r
+
+    git clone git@github.com:pbrisbin/dotfiles ~/.dotfiles
+    git clone git@gitlab.com:pbrisbin/password-store.git ~/.password-store
+    rcup
+
+    echo "All done. Log back in for a graphical environment."
+    echo "Killing X in 3..."
+    sleep 3
+    pkill X
+    ;;
+  *)
+    echo "Invalid stage: $1" >&2
+    echo "  must be disks|system|user" >&2
+    exit 1
+    ;;
+esac
