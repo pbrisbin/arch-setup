@@ -15,8 +15,7 @@ in the Arch wiki.
 
 ## Usage
 
-1. Create an installation flashdrive from [Downloads][]
-
+1. Create an installation flashdrive from [Downloads][]:
 
    Assuming the drive is at `/dev/sdb`:
 
