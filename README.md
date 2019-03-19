@@ -3,6 +3,11 @@
 **NOTE**: This is super specific to me, but could be used as a reference for
 someone else.
 
+**OTHER NOTE**: I wrote this as I manually configured my most recent laptop so
+it has yet to be tested end-to-end. That said, it's meant to be used only on a
+fresh system so the worst it can do is fail and you're just back where you were
+to begin with.
+
 ## Context
 
 Everything comes from [Installation Guide][guide], or other dedicated sections
