@@ -2,12 +2,17 @@
 set -e
 
 # Needed inputs
-: "${INSTALL_DISK:=/dev/nvme0n1}"
-: "${INSTALL_HOSTNAME:=leo}"
-: "${INSTALL_EN:=enp0s31f6}"
-: "${INSTALL_WLAN:=wlp61s0}"
-: "${INSTALL_USER:=patrick}"
-: "${INSTALL_SWAP_SIZE:=24G}"
+die_unset() {
+  printf 'Must set variable: %s\n' "$1" >&2
+  exit 1
+}
+
+[ -z "$INSTALL_DISK" ] && die_unset INSTALL_DISK
+[ -z "$INSTALL_HOSTNAME" ] && die_unset INSTALL_HOSTNAME
+[ -z "$INSTALL_EN" ] && die_unset INSTALL_EN
+[ -z "$INSTALL_WLAN" ] && die_unset INSTALL_WLAN
+[ -z "$INSTALL_USER" ] && die_unset INSTALL_USER
+[ -z "$INSTALL_SWAP_SIZE" ] && die_unset INSTALL_SWAP_SIZE
 
 case "$1" in
   disks)
