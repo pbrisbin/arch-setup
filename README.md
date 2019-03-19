@@ -36,12 +36,12 @@ in the Arch wiki.
 1. Configure required variables:
 
    ```bash
-   export INSTALL_DISK=
-   export INSTALL_HOSTNAME=
-   export INSTALL_EN=
-   export INSTALL_WLAN=
-   export INSTALL_USER=
-   export INSTALL_SWAP_SIZE=
+   export INSTALL_DISK=/dev/sda         # no partition number
+   export INSTALL_HOSTNAME=whatever
+   export INSTALL_EN=en0                # get from ip link
+   export INSTALL_WLAN=wlan0            # get from ip link
+   export INSTALL_USER=whatever
+   export INSTALL_SWAP_SIZE=16G         # valid argument to fallocate
    ```
 
 1. Be prepared to log passwords
