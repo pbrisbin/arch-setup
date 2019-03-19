@@ -186,6 +186,7 @@ EOM
       alsa-utils \
       aws-cli \
       dunst \
+      elinks \
       fcron \
       fzf \
       git \
