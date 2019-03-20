@@ -139,10 +139,9 @@ EOM
 
   user)
     # Bootstrap Aurget
-    curl -L -O https://files.pbrisbin.com/bin/aur
-    chmod +x aur
-    ./aur aurget
-    rm aur
+    curl -# https://aur.archlinux.org/cgit/aur.git/snapshot/aurget.tar.gz |
+      tar fxz -
+    (cd ./aurget && makepkg -i -r -s --noconfirm) && rm -rf ./aurget
 
     # X
     sudo pacman -S --needed --noconfirm \
