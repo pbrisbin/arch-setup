@@ -45,7 +45,8 @@ case "$1" in
     genfstab -U /mnt >>/mnt/etc/fstab
 
     cp "$0" /mnt/
-    echo "Please now \`arch-chroot /mnt' and \`./install system'."
+    arch-chroot /mnt -- ./install system
+    # echo "Please now \`arch-chroot /mnt' and \`./install system'."
     ;;
 
   system)
