@@ -18,18 +18,11 @@ case "$1" in
   disks)
     timedatectl set-ntp true
 
-    echo "TODO: gdisk step is not automated yet. Sorry."
-    echo
-    echo "Please do the following, once gdisk opens:"
-    echo
-    echo "  o: for new GPT"
-    echo "  n: for /boot (EFI), +512M end, EF00 type"
-    echo "  n: for /, defaults"
-    echo
-    echo "Press enter when ready."
-    read -r
+    sgdisk --clear \
+      --new=0:0:+512M --typecode=0:EF00 \
+      --new=0:0:0 \
+      "$INSTALL_DISK"
 
-    gdisk "$INSTALL_DISK"
     mkfs.fat -F32 "${INSTALL_DISK}1"
 
     echo "Setting password for / encryption"
