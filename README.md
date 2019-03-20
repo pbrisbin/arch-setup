@@ -33,15 +33,13 @@ in the Arch wiki.
    chmod +x ./install
    ```
 
-1. Configure required variables:
+1. Configure variables (optional, defaults shown)
 
    ```bash
+   export INSTALL_USER=patrick
+   export INSTALL_HOSTNAME=arch-setup
    export INSTALL_DISK=/dev/sda         # no partition number
-   export INSTALL_HOSTNAME=whatever
-   export INSTALL_EN=en0                # get from ip link
-   export INSTALL_WLAN=wlan0            # get from ip link
-   export INSTALL_USER=whatever
-   export INSTALL_SWAP_SIZE=16G         # valid argument to fallocate
+   export INSTALL_SWAP_SIZE=1G          # valid argument to fallocate
    ```
 
 1. Be prepared to remember passwords
