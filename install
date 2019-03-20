@@ -90,7 +90,7 @@ initrd /initramfs-linux.img
 options cryptdevice=UUID=$uuid:cryptroot root=/dev/mapper/cryptroot rw
 EOM
 
-    pacman -S --needed intel-ucode
+    pacman -S --needed --noconfirm intel-ucode
 
     # Swap
     fallocate -l "$INSTALL_SWAP_SIZE" /swapfile
@@ -100,7 +100,7 @@ EOM
     echo '/swapfile swap swap defaults 0 0' >>/etc/fstab
 
     # Networking
-    pacman -S --needed wpa_supplicant wpa_actiond dialog ifplugd
+    pacman -S --needed --noconfirm wpa_supplicant wpa_actiond dialog ifplugd
     systemctl enable "netctl-auto@$INSTALL_WLAN"
     systemctl enable "netctl-ifplugd@$INSTALL_EN"
     cat >"/etc/netctl/${INSTALL_EN}-ethernet" <<EOM
@@ -114,7 +114,7 @@ EOM
     passwd
 
     # Setup nonroot user
-    pacman -S --needed \
+    pacman -S --needed --noconfirm \
       base-devel \
       grml-zsh-config \
       neovim \
@@ -145,7 +145,7 @@ EOM
     rm aur
 
     # X
-    sudo pacman -S --needed \
+    sudo pacman -S --needed --noconfirm \
       xorg \
       xorg-xinit \
       xf86-video-intel \
@@ -170,7 +170,7 @@ EOM
     stack install xmonad xmonad-contrib
 
     # ACPID
-    sudo pacman -S --needed acpid acpi hdparm sdparm wireless_tools
+    sudo pacman -S --needed --noconfirm acpid acpi hdparm sdparm wireless_tools
     sudo systemctl enable acpid
     sudo systemctl start acpid
     aurget -S laptop-mode-tools
@@ -178,7 +178,7 @@ EOM
     sudo systemctl start laptop-mode
 
     # Docker
-    sudo pacman -S --needed docker docker-compose docker-machine
+    sudo pacman -S --needed --noconfirm docker docker-compose docker-machine
     sudo tee /etc/systemd/system/docker.service.d/override.conf <<EOM
 [Service]
 ExecStart=
@@ -189,7 +189,7 @@ EOM
     sudo gpasswd -a "$USER" docker
 
     # Other packages
-    pacman -S --needed \
+    pacman -S --needed --noconfirm \
       alsa-utils \
       aws-cli \
       dunst \
