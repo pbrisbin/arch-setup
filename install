@@ -242,10 +242,7 @@ EOM
     stack setup
     stack install xmonad xmonad-contrib
 
-    echo "All done. Log back in for a graphical environment."
-    echo "Killing X in 3..."
-    sleep 3
-    pkill X
+    echo "All done. Please log back in for a graphical environment."
     ;;
   *)
     echo "Invalid stage: $1" >&2
