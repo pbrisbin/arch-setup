@@ -1,16 +1,21 @@
 #!/bin/sh
 set -e
 
-# Needed inputs
-die_unset() {
-  printf 'Must set variable: %s\n' "$1" >&2
-  exit 1
-}
+# Set defaults
+: "${INSTALL_DISK:=/dev/sda}"
+: "${INSTALL_SWAP_SIZE:=1G}"
+: "${INSTALL_USER:=patrick}"
+: "${INSTALL_HOSTNAME:=arch-setup}"
+
+# Infer for networking
+INSTALL_EN=$(ip link | sed '/^[0-9]*: \(en[^:]*\):.*$/!d; s//\1/' | head -n 1)
+INSTALL_EN=${INSTALL_EN:-en0} # let it proceed with dummy value
+
+INSTALL_WLAN=$(ip link | sed '/^[0-9]*: \(wl[^:]*\):.*$/!d; s//\1/' | head -n 1)
+INSTALL_WLAN=${INSTALL_WLAN:-wlan0} # let it proceed with dummy value
 
 case "$1" in
   disks)
-    [ -z "$INSTALL_DISK" ] && die_unset INSTALL_DISK
-
     timedatectl set-ntp true
 
     echo "TODO: gdisk step is not automated yet. Sorry."
@@ -44,13 +49,6 @@ case "$1" in
     ;;
 
   system)
-    [ -z "$INSTALL_DISK" ] && die_unset INSTALL_DISK
-    [ -z "$INSTALL_HOSTNAME" ] && die_unset INSTALL_HOSTNAME
-    [ -z "$INSTALL_EN" ] && die_unset INSTALL_EN
-    [ -z "$INSTALL_WLAN" ] && die_unset INSTALL_WLAN
-    [ -z "$INSTALL_USER" ] && die_unset INSTALL_USER
-    [ -z "$INSTALL_SWAP_SIZE" ] && die_unset INSTALL_SWAP_SIZE
-
     # Timezone
     ln -sf /usr/share/zoneinfo/America/New_York /etc/localtime
     hwclock --systohc
