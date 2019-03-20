@@ -232,7 +232,9 @@ EOM
 
     git clone git@github.com:pbrisbin/dotfiles ~/.dotfiles
     git clone git@gitlab.com:pbrisbin/password-store.git ~/.password-store
-    rcup
+
+    # Avoid prompting
+    rcup -f
 
     # XMonad
     aurget -S --deps --noedit --noconfirm --skippgpcheck stack-static
