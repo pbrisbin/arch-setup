@@ -164,11 +164,6 @@ Section "InputClass"
 EndSection
 EOM
 
-    # XMonad
-    aurget -S stack-static
-    stack setup
-    stack install xmonad xmonad-contrib
-
     # ACPID
     sudo pacman -S --needed --noconfirm acpid acpi hdparm sdparm wireless_tools
     sudo systemctl enable acpid
@@ -240,6 +235,11 @@ EOM
     git clone git@github.com:pbrisbin/dotfiles ~/.dotfiles
     git clone git@gitlab.com:pbrisbin/password-store.git ~/.password-store
     rcup
+
+    # XMonad
+    aurget -S --deps --noedit --noconfirm --skippgpcheck stack-static
+    stack setup
+    stack install xmonad xmonad-contrib
 
     echo "All done. Log back in for a graphical environment."
     echo "Killing X in 3..."
