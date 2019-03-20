@@ -111,7 +111,7 @@ IP=dhcp
 EOM
 
     echo "Setting password for root user"
-    passwd
+    while ! passwd; do echo "Try again"; done
 
     # Setup nonroot user
     pacman -S --needed --noconfirm \
@@ -128,7 +128,7 @@ EOM
     useradd -m -G wheel -s /bin/zsh "$INSTALL_USER"
 
     echo "Setting password for $INSTALL_USER"
-    passwd "$INSTALL_USER"
+    while ! passwd "$INSTALL_USER"; do echo "Try again"; done
 
     # Setup for next stage
     cp install "/home/$INSTALL_USER/"
