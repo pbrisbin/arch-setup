@@ -44,7 +44,7 @@ case "$1" in
     pacstrap /mnt base
     genfstab -U /mnt >>/mnt/etc/fstab
 
-    cp "$0" /mnt/root/
+    cp "$0" /mnt/
     echo "Please now \`arch-chroot /mnt' and \`./install system'."
     ;;
 
