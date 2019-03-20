@@ -81,7 +81,7 @@ timeout 3
 editor 0
 EOM
 
-    uuid=$(blkid "${INSTALL_DISK}2" -s UUID | cut -f\" -d 2)
+    uuid=$(blkid "${INSTALL_DISK}2" -s UUID | cut -d\" -f 2)
 
     cat >/boot/loader/entries/arch.conf <<EOM
 title Arch Linux
