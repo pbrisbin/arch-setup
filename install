@@ -224,8 +224,7 @@ EOM
 
     # Dotfiles
     echo "Setting password for $USER@$(hostname) SSH key"
-    ssh-key-gen -t rs -b 4096
-    ssh-add
+    ssh-keygen -t rsa -b 4096
     echo
     echo "Don't forget to add this in pass when we're all done."
 
