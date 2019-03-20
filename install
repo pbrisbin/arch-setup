@@ -173,7 +173,7 @@ EOM
     sudo pacman -S --needed --noconfirm acpid acpi hdparm sdparm wireless_tools
     sudo systemctl enable acpid
     sudo systemctl start acpid
-    aurget -S laptop-mode-tools
+    aurget -S --deps --noedit --noconfirm --skippgpcheck laptop-mode-tools
     sudo systemctl enable laptop-mode
     sudo systemctl start laptop-mode
 
@@ -221,7 +221,7 @@ EOM
       xdotool \
       zsh
 
-    aurget -S \
+    aurget -S --deps --noedit --noconfirm --skippgpcheck \
       browserpass \
       rcm \
       zoom
