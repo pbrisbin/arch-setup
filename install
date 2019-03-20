@@ -241,7 +241,14 @@ EOM
     stack setup
     stack install xmonad xmonad-contrib
 
-    echo "All done. Please log back in for a graphical environment."
+    cat <<EOM
+All done! Before you go, don't forget to:
+
+- Configure GPG
+- Add your SSH key's password to pass
+
+Then simply log out.
+EOM
     ;;
   *)
     echo "Invalid stage: $1" >&2
