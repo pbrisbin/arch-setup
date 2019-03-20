@@ -39,6 +39,9 @@ case "${1:-system}" in
 
     cp "$0" /mnt/
     arch-chroot /mnt ./install system-chroot
+
+    echo "Rebooting. When you log in as $INSTALL_USER, this will continue."
+    reboot
     ;;
 
   system-chroot)
@@ -124,8 +127,13 @@ EOM
     # Setup for next stage
     cp install "/home/$INSTALL_USER/"
     chown "$INSTALL_USER:$INSTALL_USER" "/home/$INSTALL_USER/install"
-    echo "Please now \`exit; umount -R /mnt; reboot'."
-    echo "Then log in as $INSTALL_USER and \`./install user'."
+
+    cat >"/home/$INSTALL_USER/.zshrc" <<'EOM'
+echo "Continuing arch-setup/install in 3..."
+sleep 3 # usually need to give networking a second
+./install user
+EOM
+    chown "$INSTALL_USER:$INSTALL_USER" "/home/$INSTALL_USER/.zshrc"
     ;;
 
   user)
