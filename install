@@ -121,7 +121,7 @@ EOM
       sudo \
       zsh
 
-    echo '%wheel ALL=(ALL) NOPASSWD:ALL' >etc/sudoers.d/100-wheel
+    echo '%wheel ALL=(ALL) NOPASSWD:ALL' >/etc/sudoers.d/100-wheel
 
     ln -s /usr/bin/nvim /usr/local/bin/vim
     chsh -s /bin/zsh
