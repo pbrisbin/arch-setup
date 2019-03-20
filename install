@@ -15,7 +15,7 @@ INSTALL_WLAN=$(ip link | sed '/^[0-9]*: \(wl[^:]*\):.*$/!d; s//\1/' | head -n 1)
 INSTALL_WLAN=${INSTALL_WLAN:-wlan0} # let it proceed with dummy value
 
 case "$1" in
-  disks)
+  system)
     timedatectl set-ntp true
 
     sgdisk --clear \
@@ -38,11 +38,10 @@ case "$1" in
     genfstab -U /mnt >>/mnt/etc/fstab
 
     cp "$0" /mnt/
-    arch-chroot /mnt -- ./install system
-    # echo "Please now \`arch-chroot /mnt' and \`./install system'."
+    arch-chroot /mnt ./install system-chroot
     ;;
 
-  system)
+  system-chroot)
     # Timezone
     ln -sf /usr/share/zoneinfo/America/New_York /etc/localtime
     hwclock --systohc
@@ -246,7 +245,7 @@ EOM
     ;;
   *)
     echo "Invalid stage: $1" >&2
-    echo "  must be disks|system|user" >&2
+    echo "  must be system|system-chroot|user" >&2
     exit 1
     ;;
 esac
