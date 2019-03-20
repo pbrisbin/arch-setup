@@ -218,6 +218,7 @@ EOM
 
     aurget -S --deps --noedit --noconfirm --skippgpcheck \
       browserpass \
+      heroku-cli \
       rcm \
       zoom
 
