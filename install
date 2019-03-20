@@ -7,15 +7,10 @@ die_unset() {
   exit 1
 }
 
-[ -z "$INSTALL_DISK" ] && die_unset INSTALL_DISK
-[ -z "$INSTALL_HOSTNAME" ] && die_unset INSTALL_HOSTNAME
-[ -z "$INSTALL_EN" ] && die_unset INSTALL_EN
-[ -z "$INSTALL_WLAN" ] && die_unset INSTALL_WLAN
-[ -z "$INSTALL_USER" ] && die_unset INSTALL_USER
-[ -z "$INSTALL_SWAP_SIZE" ] && die_unset INSTALL_SWAP_SIZE
-
 case "$1" in
   disks)
+    [ -z "$INSTALL_DISK" ] && die_unset INSTALL_DISK
+
     timedatectl set-ntp true
 
     echo "TODO: gdisk step is not automated yet. Sorry."
@@ -49,6 +44,13 @@ case "$1" in
     ;;
 
   system)
+    [ -z "$INSTALL_DISK" ] && die_unset INSTALL_DISK
+    [ -z "$INSTALL_HOSTNAME" ] && die_unset INSTALL_HOSTNAME
+    [ -z "$INSTALL_EN" ] && die_unset INSTALL_EN
+    [ -z "$INSTALL_WLAN" ] && die_unset INSTALL_WLAN
+    [ -z "$INSTALL_USER" ] && die_unset INSTALL_USER
+    [ -z "$INSTALL_SWAP_SIZE" ] && die_unset INSTALL_SWAP_SIZE
+
     # Timezone
     ln -sf /usr/share/zoneinfo/America/New_York /etc/localtime
     hwclock --systohc
@@ -184,7 +186,7 @@ ExecStart=/usr/bin/dockerd -H fd:// -s overlay2
 EOM
     sudo systemctl enable docker
     sudo systemctl start docker
-    sudo gpasswd -a "$INSTALL_USER" docker
+    sudo gpasswd -a "$USER" docker
 
     # Other packages
     pacman -S --needed \
@@ -225,7 +227,7 @@ EOM
       zoom
 
     # Dotfiles
-    echo "Setting password for $INSTALL_USER@$INSTALL_HOSTNAME SSH key"
+    echo "Setting password for $USER@$(hostname) SSH key"
     ssh-key-gen -t rs -b 4096
     ssh-add
     echo
