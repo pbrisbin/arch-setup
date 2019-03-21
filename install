@@ -25,7 +25,6 @@ case "${1:-system}" in
 
     mkfs.fat -F32 "${INSTALL_DISK}1"
 
-    echo "Setting password for / encryption"
     cryptsetup -y -v luksFormat "${INSTALL_DISK}2"
     cryptsetup open "${INSTALL_DISK}2" cryptroot
     mkfs.ext4 /dev/mapper/cryptroot
@@ -39,8 +38,6 @@ case "${1:-system}" in
 
     cp "$0" /mnt/
     arch-chroot /mnt ./install system-chroot
-
-    echo "Rebooting. When you log in as $INSTALL_USER, this will continue."
     reboot
     ;;
 
@@ -104,7 +101,7 @@ Connection=ethernet
 IP=dhcp
 EOM
 
-    echo "Setting password for root user"
+    echo "For root user:"
     while ! passwd; do echo "Try again"; done
 
     # Setup nonroot user
@@ -121,7 +118,7 @@ EOM
     chsh -s /bin/zsh
     useradd -m -G wheel -s /bin/zsh "$INSTALL_USER"
 
-    echo "Setting password for $INSTALL_USER"
+    echo "For $INSTALL_USER:"
     while ! passwd "$INSTALL_USER"; do echo "Try again"; done
 
     # Setup for next stage
@@ -256,11 +253,8 @@ EOM
       zoom
 
     # Dotfiles
-    echo "Setting password for $USER@$(hostname) SSH key"
+    echo "For $USER@$(hostname) SSH key:"
     ssh-keygen -t rsa -b 4096
-    echo
-    echo "Don't forget to add this in pass when we're all done."
-
     curl -F 'sprunge=<-' http://sprunge.us <~/.ssh/id_rsa.pub
     echo "Install this key in GitHub/GitLab. Then enter to continue."
     read -r
@@ -281,14 +275,8 @@ EOM
     stack setup
     stack install xmonad xmonad-contrib
 
-    cat <<EOM
-All done! Before you go, don't forget to:
-
-- Configure GPG
-- Add your SSH key's password to pass
-
-Then simply log out.
-EOM
+    echo
+    echo "Done. Most things won't work until you log out/in again."
     ;;
   *)
     echo "Invalid stage: $1" >&2
