@@ -170,6 +170,40 @@ EOM
     sudo systemctl enable laptop-mode
     sudo systemctl start laptop-mode
 
+    sudo tee /etc/acpi/handler.sh <<'EOM'
+#!/bin/sh
+
+amixer_() {
+  # Workaround
+  amixer -c 0 sset Headphone unmute
+  amixer -c 0 sset Speaker unmute
+  amixer "$@"
+}
+
+notify() {
+  /home/patrick/.local/bin/runx notify-send "$@"
+}
+
+logger -t acpid "$*"
+
+case "$1" in
+  battery) notify "Battery Event" "$(acpi)" ;;
+  button/f20) amixer -c 0 sset Capture toggle ;; # mic mute
+  button/mute) amixer_ -c 0 sset Master toggle ;;
+  button/volumedown) amixer_ -c 0 sset Master '3%-' ;;
+  button/volumeup) amixer_ -c 0 sset Master '3%+' ;;
+  video/brightnessup)
+    read -r val < /sys/class/backlight/intel_backlight/brightness
+    echo $((val+77)) > /sys/class/backlight/intel_backlight/brightness
+    ;;
+  video/brightnessdown)
+    read -r val < /sys/class/backlight/intel_backlight/brightness
+    echo $((val-77)) > /sys/class/backlight/intel_backlight/brightness
+    ;;
+  #*) notify "ACPI Event" "$(printf "%s\n" "$@")" ;;
+esac
+EOM
+
     # Docker
     sudo pacman -S --needed --noconfirm docker docker-compose docker-machine
     sudo mkdir -p /etc/systemd/system/docker.service.d
