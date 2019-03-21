@@ -1,17 +1,9 @@
-# Arch Installation Script
+# Arch Setup Script
 
-**NOTE**: This is super specific to me, but could be used as a reference for
-someone else.
-
-**OTHER NOTE**: I wrote this as I manually configured my most recent laptop so
-it has yet to be tested end-to-end. That said, it's meant to be used only on a
-fresh system so the worst it can do is fail and you're just back where you were
-to begin with.
-
-## Context
-
-Everything comes from [Installation Guide][guide], or other dedicated sections
-in the Arch wiki.
+This script was drafted the last time I installed Arch on a new laptop. It was
+then polished up and debugged in VirtualBox. It aims to bring me from a new
+machine to my complete, usual environment with as little interaction as
+possible.
 
 ## Usage
 
@@ -20,7 +12,7 @@ in the Arch wiki.
    Assuming the drive is at `/dev/sdb`:
 
    ```
-   sudo dd bs=4M if=archlinux-2016.12.01-dual.iso of=/dev/sdb status=progress
+   sudo dd bs=4M if=archlinux-...-dual.iso of=/dev/sdb status=progress
    sync
    ```
 
@@ -33,7 +25,7 @@ in the Arch wiki.
    chmod +x ./install
    ```
 
-1. Configure variables (optional, defaults shown)
+1. Configure variables (optional, defaults shown):
 
    ```bash
    export INSTALL_USER=patrick
@@ -42,76 +34,61 @@ in the Arch wiki.
    export INSTALL_SWAP_SIZE=1G          # valid argument to fallocate
    ```
 
-1. Be prepared to remember passwords
+1. Finally, `./install`
 
-   This script prompts for 4 passwords:
+## What to Expect
 
-   - Encrypted `/` key
-   - `root` user password
-   - non-`root` user password
-   - SSH key passphrase
+First, the disk will be partitioned and set up for encryption. You'll need to
+confirm rewriting the encrypted `/`, supply a passphrase, and give that
+passphrase right back again when the drive gets re-opened.
 
-   Be prepared to write these somewhere as you enter them. My own trick is to
-   use https://passphrase-me.herokuapp.com on a nearby machine and leave the
-   tabs open until I'm in my full system and can put them into `pass(1)`.
+Next, the basic system is installed with one non-`root` user and some creature
+comforts, such as ZSH and neovim. You'll need to give a password for the `root`
+and non-`root` user.
 
-1. `./install disks`
+Then the system will reboot. If you're not me, you would probably stop here.
 
-   This will set up an encrypted root and prepare the new filesystem. It will
-   bring you to the point where you need to `arch-chroot` and proceed from
-   there.
+When you log back in, the install script will re-launch automatically and
+configure the rest of the environment with things like:
 
-1. `./install system`
+- Various packages I like or need, ACPID and laptop-mode, Docker, etc
+- An SSH key, my dotfiles and `pass(1)` store
+- Finally, X and XMonad
 
-   This will minimally configure a non-graphical system with networking and a
-   non-`root` user. This will bring you to the point where it's time to reboot
-   into the real system.
+It will then instruct me to finishing configuring GPG manually. For my own
+reference, because I always forget, that means the following:
 
-   If you're not me, it's likely you want to stop here.
+- Mount my encrypted flashdrive of master keys with truecrypt
+- Add a new signing key for this machine:
 
-1. `./install user`
+  ```
+  gpg --homedir /mnt/truecrypt1/gnupg --edit-key {EMAIL}
+  # addkey, RSA Sign, 4096
+  ```
 
-   Finishes full configuration of the Graphical system (XMonad) using my
-   personal dotfiles. Also sets up acpid, docker, and other packages I need. It
-   does set up `pass(1)`, but that won't work until I finish configuring GPG,
-   which is a manual thing for now.
+  ```
+  gpg --homedir /mnt/truecrypt1/gnupg --send-keys {MASTER}
+  ```
 
-1. Manually configure GPG
+- Export the secret keys for just your (shared) encryption key and the (new)
+  signing key you just created:
 
-   For my own reference:
+  ```
+  gpg --homedir /mnt/truecrypt1/gnupg \
+    --output secret-subkeys \
+    --export-secret-subkeys {SHARED ENCRYPTION}! {NEW SIGNING}!
+  ```
 
-   - Mount encrypted flashdrive or master keys with truecrypt
-   - Add a new signing key for this machine:
+- Import those and verify:
 
-     ```
-     gpg --homedir /mnt/truecrypt1/gnupg --edit-key {EMAIL}
-     # addkey, RSA Sign, 4096
-     ```
+  ```
+  gpg --import secret-subkeys
+  gpg -K
+  ```
 
-     ```
-     gpg --homedir /mnt/truecrypt1/gnupg --send-keys {MASTER}
-     ```
+  You should see `#`s next to all keys except those you expect to have secret
+  keys for on this machine.
 
-   - Export the secret keys for just your (shared) encryption key and the (new)
-     signing key you just created:
+NOTE: you will have to kill gpg-agent to unmount the flashdrive.
 
-     ```
-     gpg --homedir /mnt/truecrypt1/gnupg \
-       --output secret-subkeys \
-       --export-secret-subkeys {SHARED ENCRYPTION}! {NEW SIGNING}!
-     ```
-
-   - Import those and verify:
-
-     ```
-     gpg --import secret-subkeys
-     gpg -K
-     ```
-
-     You should see `#`s next to all keys except those you expect to have secret
-     keys for on this machine.
-
-   NOTE: you will have to kill gpg-agent to unmount the flashdrive.
-
-[guide]: https://wiki.archlinux.org/index.php/installation_guide
 [downloads]: https://www.archlinux.org/download/
