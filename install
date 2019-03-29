@@ -269,9 +269,6 @@ EOM
       git clone https://github.com/pbrisbin/dotfiles ~/.dotfiles
     fi
 
-    # Avoid prompting
-    rcup -f
-
     # Monitor hotplugging
     sudo tee /etc/udev/rules.d/99-monitor-hotplug.rules <<EOM
 KERNEL=="card0", SUBSYSTEM=="drm", RUN+="/home/$INSTALL_USER/.local/bin/runx msu"
@@ -281,6 +278,9 @@ EOM
     aurget -S --deps --noedit --noconfirm --skippgpcheck stack-static
     stack setup
     stack install xmonad xmonad-contrib
+
+    # Avoid prompting
+    rcup -f
 
     echo
     echo "Done. Most things won't work until you log out/in again."
