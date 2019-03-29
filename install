@@ -274,10 +274,9 @@ EOM
 KERNEL=="card0", SUBSYSTEM=="drm", RUN+="/home/$INSTALL_USER/.local/bin/runx msu"
 EOM
 
-    # XMonad
+    # Stack
     aurget -S --deps --noedit --noconfirm --skippgpcheck stack-static
     stack setup
-    stack install xmonad xmonad-contrib
 
     # Avoid prompting
     rcup -f
