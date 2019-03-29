@@ -227,6 +227,7 @@ EOM
       htop \
       hub \
       isync \
+      jq \
       jre-openjdk-headless \
       msmtp \
       mutt \
@@ -235,6 +236,7 @@ EOM
       postgresql-libs \
       ruby \
       rxvt-unicode \
+      scrot \
       shfmt \
       slock \
       truecrypt \
