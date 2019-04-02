@@ -107,6 +107,10 @@ EOM
     echo "For root user:"
     while ! passwd; do echo "Try again"; done
 
+    # Absolute minimum editor set up for root
+    mkdir -p /root/.config/nvim
+    echo 'set background=light' >/root/.config/nvim/init.vim
+
     # Setup nonroot user
     pacman -S --needed --noconfirm \
       base-devel \
