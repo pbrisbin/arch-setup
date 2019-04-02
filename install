@@ -42,6 +42,9 @@ case "${1:-system}" in
     ;;
 
   system-chroot)
+    # Pacman
+    sed -i '/#\(Color\)/\1/' /etc/pacman.conf
+
     # Timezone
     ln -sf /usr/share/zoneinfo/America/New_York /etc/localtime
     hwclock --systohc
