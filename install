@@ -114,7 +114,7 @@ EOM
 
     echo '%wheel ALL=(ALL) NOPASSWD:ALL' >/etc/sudoers.d/100-wheel
 
-    ln -s /usr/bin/nvim /usr/local/bin/vim
+    ln -s /usr/bin/nvim /usr/bin/vim
     chsh -s /bin/zsh
     useradd -m -G wheel -s /bin/zsh "$INSTALL_USER"
 
