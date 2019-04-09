@@ -68,6 +68,9 @@ reference, because I always forget, that means the following:
 
   ```
   gpg --homedir /mnt/truecrypt1/gnupg --send-keys {MASTER}
+
+  # Updates files.pbrisbin.com
+  push-public-key
   ```
 
 - Export the secret keys for just your (shared) encryption key and the (new)
