@@ -14,6 +14,11 @@ INSTALL_EN=${INSTALL_EN:-en0} # let it proceed with dummy value
 INSTALL_WLAN=$(ip link | sed '/^[0-9]*: \(wl[^:]*\):.*$/!d; s//\1/' | head -n 1)
 INSTALL_WLAN=${INSTALL_WLAN:-wlan0} # let it proceed with dummy value
 
+curl_file() {
+  url=https://raw.githubusercontent.com/pbrisbin/arch-setup/master/files/$1
+  curl --location --silent --fail "$url"
+}
+
 case "${1:-system}" in
   system)
     timedatectl set-ntp true
@@ -108,9 +113,9 @@ EOM
     echo "For root user:"
     while ! passwd; do echo "Try again"; done
 
-    # Absolute minimum editor set up for root
+    # Minimum editor set up for root
     mkdir -p /root/.config/nvim
-    echo 'set background=light' >/root/.config/nvim/init.vim
+    curl_file root-init.vim >/root/.config/nvim/init.vim
 
     # Setup nonroot user
     pacman -S --needed --noconfirm \
@@ -159,13 +164,7 @@ EOM
       gmrun \
       dmenu
 
-    sudo tee /etc/X11/xorg.conf.d/10-keyboard.conf <<EOM
-Section "InputClass"
-  Identifier "Keyboard Defaults"
-  MatchIsKeyboard "yes"
-  Option "XkbOptions" "ctrl:nocaps"
-EndSection
-EOM
+    curl_file 10-keyboard.conf | sudo tee /etc/X11/xorg.conf.d/10-keyboard.conf
 
     # ACPID
     sudo pacman -S --needed --noconfirm acpid acpi hdparm sdparm wireless_tools
@@ -175,39 +174,7 @@ EOM
     sudo systemctl enable laptop-mode
     sudo systemctl start laptop-mode
 
-    sudo tee /etc/acpi/handler.sh <<'EOM'
-#!/bin/sh
-
-amixer_() {
-  # Workaround
-  amixer -c 0 sset Headphone unmute
-  amixer -c 0 sset Speaker unmute
-  amixer "$@"
-}
-
-notify() {
-  /home/patrick/.local/bin/runx notify-send "$@"
-}
-
-logger -t acpid "$*"
-
-case "$1" in
-  battery) notify "Battery Event" "$(acpi)" ;;
-  button/f20) amixer -c 0 sset Capture toggle ;; # mic mute
-  button/mute) amixer_ -c 0 sset Master toggle ;;
-  button/volumedown) amixer_ -c 0 sset Master '3%-' ;;
-  button/volumeup) amixer_ -c 0 sset Master '3%+' ;;
-  video/brightnessup)
-    read -r val < /sys/class/backlight/intel_backlight/brightness
-    echo $((val+77)) > /sys/class/backlight/intel_backlight/brightness
-    ;;
-  video/brightnessdown)
-    read -r val < /sys/class/backlight/intel_backlight/brightness
-    echo $((val-77)) > /sys/class/backlight/intel_backlight/brightness
-    ;;
-  #*) notify "ACPI Event" "$(printf "%s\n" "$@")" ;;
-esac
-EOM
+    curl_file acpi-handler.sh | sudo tee /etc/acpi/handler.sh
 
     # Docker
     sudo pacman -S --needed --noconfirm docker docker-compose docker-machine
