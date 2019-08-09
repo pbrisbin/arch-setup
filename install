@@ -225,6 +225,7 @@ EOM
     sudo pacman -S --needed --noconfirm \
       alsa-utils \
       aws-cli \
+      bind-tools \
       dunst \
       elinks \
       fcron \
@@ -237,6 +238,7 @@ EOM
       isync \
       jq \
       jre-openjdk-headless \
+      lsof \
       msmtp \
       mutt \
       openssh \
@@ -247,6 +249,7 @@ EOM
       scrot \
       shfmt \
       slock \
+      strace \
       truecrypt \
       urxvt-perls \
       weechat \
