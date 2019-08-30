@@ -86,6 +86,7 @@ EOM
     cat >/boot/loader/entries/arch.conf <<EOM
 title Arch Linux
 linux /vmlinuz-linux
+initrd /intel-ucode.img
 initrd /initramfs-linux.img
 options cryptdevice=UUID=$uuid:cryptroot root=/dev/mapper/cryptroot rw
 EOM
@@ -175,6 +176,10 @@ EOM
     sudo systemctl start laptop-mode
 
     curl_file acpi-handler.sh | sudo tee /etc/acpi/handler.sh
+
+    # Automatic boot updates
+    aurget -S --deps --noedit --noconfirm --skippgpcheck \
+      systemd-boot-pacman-hook
 
     # Docker
     sudo pacman -S --needed --noconfirm docker docker-compose docker-machine
