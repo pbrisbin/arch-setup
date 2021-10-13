@@ -239,7 +239,6 @@ EOM
     # Other packages
     sudo pacman -S --needed --noconfirm \
       alsa-utils \
-      aws-cli \
       bind-tools \
       dos2unix \
       dunst \
@@ -281,6 +280,7 @@ EOM
       zsh-autosuggestions
 
     aurget -S --deps --noedit --noconfirm --skippgpcheck \
+      aws-cli-v2-bin \
       heroku-cli-bin \
       rcm \
       zoom
