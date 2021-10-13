@@ -21,26 +21,29 @@ case "$1" in
     ;;
   button/volumedown)
     runx pactl set-sink-mute @DEFAULT_SINK@ false
-    runx pactl set-sink-volume @DEFAULT_SINK@ "-7%"
+    runx pactl set-sink-volume @DEFAULT_SINK@ "-15%"
     notify -r 2 "Volume" "$(runx /home/patrick/.local/bin/pactl-status)"
     ;;
   button/volumeup)
     runx pactl set-sink-mute @DEFAULT_SINK@ false
-    runx pactl set-sink-volume @DEFAULT_SINK@ "+7%"
+    runx pactl set-sink-volume @DEFAULT_SINK@ "+15%"
     notify -r 2 "Volume" "$(runx /home/patrick/.local/bin/pactl-status)"
     ;;
   video/brightnessup)
     read -r val < /sys/class/backlight/intel_backlight/brightness
-    echo $((val+77)) > /sys/class/backlight/intel_backlight/brightness
+    echo $((val+1000)) > /sys/class/backlight/intel_backlight/brightness
     notify -r 3 "Brightness" "$(cat /sys/class/backlight/intel_backlight/brightness)"
     ;;
   video/brightnessdown)
     read -r val < /sys/class/backlight/intel_backlight/brightness
-    echo $((val-77)) > /sys/class/backlight/intel_backlight/brightness
+    echo $((val-1000)) > /sys/class/backlight/intel_backlight/brightness
     notify -r 3 "Brightness" "$(cat /sys/class/backlight/intel_backlight/brightness)"
     ;;
   button/wlan)
     notify -r 4 "WLAN" "$(rfkill list wifi)"
+    ;;
+  ibm/hotkey)
+    notify -r 4 "Bluetooth" "$(rfkill list bluetooth)"
     ;;
   #*) notify "ACPI Event" "$(printf "%s\n" "$@")" ;;
 esac
