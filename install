@@ -141,7 +141,14 @@ EOM
     echo '/swapfile swap swap defaults 0 0' >>/etc/fstab
 
     # Networking
-    pacman -S --needed --noconfirm wpa_supplicant dialog ifplugd
+    pacman -S --needed --noconfirm \
+      dhcpcd \
+      dialog \
+      ifplugd \
+      netctl \
+      wireless_tools \
+      wpa_supplicant
+    systemctl enable dhcpcd.service
     systemctl enable "netctl-auto@$INSTALL_WLAN"
     systemctl enable "netctl-ifplugd@$INSTALL_EN"
     cat >"/etc/netctl/${INSTALL_EN}-ethernet" <<EOM
@@ -210,7 +217,7 @@ EOM
     curl_file 10-keyboard.conf | sudo tee /etc/X11/xorg.conf.d/10-keyboard.conf
 
     # ACPID
-    sudo pacman -S --needed --noconfirm acpid acpi hdparm sdparm wireless_tools
+    sudo pacman -S --needed --noconfirm acpid acpi hdparm sdparm
     sudo systemctl enable acpid
     sudo systemctl start acpid
     aurget -S --deps --noedit --noconfirm --skippgpcheck laptop-mode-tools
