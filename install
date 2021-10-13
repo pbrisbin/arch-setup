@@ -201,6 +201,8 @@ EOM
       xterm \
       ttf-dejavu \
       chromium \
+      firefox \
+      firefox-nightly \
       gmrun \
       dmenu
 
@@ -231,6 +233,7 @@ EOM
       alsa-utils \
       aws-cli \
       bind-tools \
+      dos2unix \
       dunst \
       elinks \
       fcron \
