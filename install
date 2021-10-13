@@ -50,7 +50,7 @@ case "${1:-system}" in
 
   system-chroot)
     # Pacman
-    sed -i '/#\(Color\)/\1/' /etc/pacman.conf
+    sed -i 's/#\(Color\)/\1/' /etc/pacman.conf
 
     # Reflector
     pacman -S --needed --noconfirm reflector
