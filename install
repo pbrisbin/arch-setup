@@ -254,7 +254,7 @@ EOM
       pass \
       pipewire \
       pipewire-alsa \
-      pipewire-pulse
+      pipewire-pulse \
       postgresql-libs \
       ruby \
       rxvt-unicode \
