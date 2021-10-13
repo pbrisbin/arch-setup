@@ -258,6 +258,7 @@ EOM
       mutt \
       openssh \
       pass \
+      passff-host \
       pipewire \
       pipewire-alsa \
       pipewire-pulse \
@@ -278,7 +279,6 @@ EOM
       zsh
 
     aurget -S --deps --noedit --noconfirm --skippgpcheck \
-      browserpass \
       heroku-cli-bin \
       rcm \
       zoom
