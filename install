@@ -40,7 +40,7 @@ case "${1:-system}" in
     mkdir /mnt/boot
     mount "${INSTALL_DISK}${INSTALL_PARTITION_PREFIX}1" /mnt/boot
 
-    pacstrap /mnt base
+    pacstrap /mnt base linux linux-firmware
     genfstab -U /mnt >>/mnt/etc/fstab
 
     cp "$0" /mnt/
