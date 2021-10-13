@@ -3,6 +3,7 @@ set -e
 
 # Set defaults
 : "${INSTALL_DISK:=/dev/sda}"
+: "${INSTALL_PARTITION_PREFIX:=""}"
 : "${INSTALL_SWAP_SIZE:=1G}"
 : "${INSTALL_USER:=patrick}"
 : "${INSTALL_HOSTNAME:=arch-setup}"
@@ -29,15 +30,15 @@ case "${1:-system}" in
       --new=0:0:0 \
       "$INSTALL_DISK"
 
-    mkfs.fat -F32 "${INSTALL_DISK}1"
+    mkfs.fat -F32 "${INSTALL_DISK}${INSTALL_PARTITION_PREFIX}1"
 
-    cryptsetup -y -v luksFormat "${INSTALL_DISK}2"
-    cryptsetup open "${INSTALL_DISK}2" cryptroot
+    cryptsetup -y -v luksFormat "${INSTALL_DISK}${INSTALL_PARTITION_PREFIX}2"
+    cryptsetup open "${INSTALL_DISK}${INSTALL_PARTITION_PREFIX}2" cryptroot
     mkfs.ext4 /dev/mapper/cryptroot
 
     mount /dev/mapper/cryptroot /mnt
     mkdir /mnt/boot
-    mount "${INSTALL_DISK}1" /mnt/boot
+    mount "${INSTALL_DISK}${INSTALL_PARTITION_PREFIX}1" /mnt/boot
 
     pacstrap /mnt base
     genfstab -U /mnt >>/mnt/etc/fstab
@@ -112,7 +113,7 @@ timeout 3
 editor 0
 EOM
 
-    uuid=$(blkid "${INSTALL_DISK}2" -s UUID | cut -d\" -f 2)
+    uuid=$(blkid "${INSTALL_DISK}${INSTALL_PARTITION_PREFIX}2" -s UUID | cut -d\" -f 2)
 
     cat >/boot/loader/entries/arch.conf <<EOM
 title Arch Linux
