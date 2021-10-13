@@ -51,7 +51,7 @@ case "${1:-system}" in
     sed -i '/#\(Color\)/\1/' /etc/pacman.conf
 
     # Reflector
-    pacman -S --needed --noconfirm relector
+    pacman -S --needed --noconfirm reflector
 
     mkdir -p /etc/xdg/reflector/
     cat >/etc/xdg/reflector/reflector.conf <<'EOM'
