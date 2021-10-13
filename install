@@ -6,6 +6,7 @@ set -e
 : "${INSTALL_SWAP_SIZE:=1G}"
 : "${INSTALL_USER:=patrick}"
 : "${INSTALL_HOSTNAME:=arch-setup}"
+: "${INSTALL_NVIDIA:=0}"
 
 # Infer for networking
 INSTALL_EN=$(ip link | sed '/^[0-9]*: \(en[^:]*\):.*$/!d; s//\1/' | head -n 1)
@@ -118,10 +119,18 @@ title Arch Linux
 linux /vmlinuz-linux
 initrd /intel-ucode.img
 initrd /initramfs-linux.img
-options cryptdevice=UUID=$uuid:cryptroot root=/dev/mapper/cryptroot rw overlay.metacopy=N
+options cryptdevice=UUID=$uuid:cryptroot root=/dev/mapper/cryptroot rw overlay.metacopy=N$(
+      if [ "$INSTALL_NVIDIA" -eq 1 ]; then
+        printf ' nvidia-drm.modeset=1'
+      fi
+    )
 EOM
 
     pacman -S --needed --noconfirm intel-ucode
+
+    if [ "$INSTALL_NVIDIA" -eq 1 ]; then
+      pacman -S --needed --noconfirm nvidia
+    fi
 
     # Swap
     fallocate -l "$INSTALL_SWAP_SIZE" /swapfile

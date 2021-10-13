@@ -32,6 +32,7 @@ possible.
    export INSTALL_HOSTNAME=arch-setup
    export INSTALL_DISK=/dev/sda         # no partition number
    export INSTALL_SWAP_SIZE=1G          # valid argument to fallocate
+   export INSTALL_NVIDIA=0              # 0|1
    ```
 
 1. Finally, `./install`
