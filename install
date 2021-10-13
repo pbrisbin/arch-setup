@@ -306,7 +306,9 @@ KERNEL=="card0", SUBSYSTEM=="drm", ACTION=="change", \
 EOM
 
     # Stack
-    aurget -S --deps --noedit --noconfirm --skippgpcheck stack-static
+    aurget -S --deps --noedit --noconfirm --skippgpcheck \
+      ncurses5-compat-libs \
+      stack-static
     stack setup
 
     # Avoid prompting
