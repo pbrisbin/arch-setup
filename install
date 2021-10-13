@@ -145,6 +145,7 @@ EOM
       dhcpcd \
       dialog \
       ifplugd \
+      inetutils \
       netctl \
       wireless_tools \
       wpa_supplicant
