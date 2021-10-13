@@ -251,6 +251,9 @@ EOM
       mutt \
       openssh \
       pass \
+      pipewire \
+      pipewire-alsa \
+      pipewire-pulse
       postgresql-libs \
       ruby \
       rxvt-unicode \
