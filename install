@@ -210,7 +210,6 @@ EOM
       ttf-dejavu \
       chromium \
       firefox \
-      firefox-nightly \
       gmrun \
       dmenu
 
