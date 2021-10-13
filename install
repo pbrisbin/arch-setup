@@ -276,7 +276,8 @@ EOM
       xautolock \
       xclip \
       xdotool \
-      zsh
+      zsh \
+      zsh-autosuggestions
 
     aurget -S --deps --noedit --noconfirm --skippgpcheck \
       heroku-cli-bin \
