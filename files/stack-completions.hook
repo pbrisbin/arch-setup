@@ -1,0 +1,10 @@
+[Trigger]
+Operation = Upgrade
+Type = Package
+Target = stack-static
+
+[Action]
+Description = Updating stack completions
+When = PostTransaction
+Depends = stack-static
+Exec = /bin/sh -c 'stack --zsh-completion-script $(which stack) > /usr/share/zsh/site-functions/_stack'
