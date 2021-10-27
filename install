@@ -188,9 +188,7 @@ EOM
     chown "$INSTALL_USER:$INSTALL_USER" "/home/$INSTALL_USER/install"
 
     cat >"/home/$INSTALL_USER/.zshrc" <<'EOM'
-echo "Continuing arch-setup/install in 3..."
-sleep 3 # usually need to give networking a second
-./install user
+echo "Connect to wifi and run \`./install user' to continue setup"
 EOM
     chown "$INSTALL_USER:$INSTALL_USER" "/home/$INSTALL_USER/.zshrc"
     ;;
