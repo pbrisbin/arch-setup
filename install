@@ -196,71 +196,86 @@ EOM
     ;;
 
   user)
-    # Bootstrap Aurget
-    curl -# https://aur.archlinux.org/cgit/aur.git/snapshot/aurget.tar.gz |
-      tar fxz -
-    (cd ./aurget && makepkg -i -r -s --noconfirm) && rm -rf ./aurget
+    # AUR helper
+    curl -L https://aur.archlinux.org/cgit/aur.git/snapshot/aurutils.tar.gz | tar xz
+    cd aurutils
+    gpg --recv-keys DBE7D3DD8C81D58D0A13D0E76BC26A17B9B7018A
+    makepkg -srci --noconfirm
 
-    # X
-    sudo pacman -S --needed --noconfirm \
-      xorg \
-      xorg-xinit \
-      xf86-video-intel \
-      xf86-input-synaptics \
-      xterm \
-      ttf-dejavu \
-      chromium \
-      firefox \
-      gmrun \
-      dmenu
+    curl -L https://aur.archlinux.org/cgit/aur.git/snapshot/aurto.tar.gz | tar xz
+    cd aurto
+    makepkg -srci --noconfirm
 
-    curl_file 10-keyboard.conf | sudo tee /etc/X11/xorg.conf.d/10-keyboard.conf
+    aurto init
+    aurto add aurto
 
-    # ACPID
-    sudo pacman -S --needed --noconfirm acpid acpi hdparm sdparm
-    sudo systemctl enable acpid
-    sudo systemctl start acpid
-    aurget -S --deps --noedit --noconfirm --skippgpcheck laptop-mode-tools
-    sudo systemctl enable laptop-mode
-    sudo systemctl start laptop-mode
+    # Pre-trust maintainers of AUR packages we'll need
+    mkdir -p /etc/aurto
+    cat >>/etc/aurto/trusted-users <<'EOM'
+Barthalion
+Felixoid
+Nierro
+alad
+alexheretic
+brisbin33
+dbermond
+dude
+edh
+j.taala
+sampsoncrowley
+simonfxr
+stilvoid
+tomwadley
+EOM
 
-    curl_file acpi-handler.sh | sudo tee /etc/acpi/handler.sh
+    # And add them
+    aurto add \
+      aws-cli-v2-bin \
+      heroku-cli-bin \
+      laptop-mode-tools \
+      ncurses5-compat-libs \
+      nvm \
+      rcm \
+      stack-static \
+      systemd-boot-pacman-hook \
+      zoom
 
-    # Automatic boot updates
-    aurget -S --deps --noedit --noconfirm --skippgpcheck \
-      systemd-boot-pacman-hook
-
-    # Docker
-    sudo pacman -S --needed --noconfirm docker docker-compose docker-machine
-    sudo systemctl enable docker
-    sudo systemctl start docker
-    sudo gpasswd -a "$USER" docker
-
-    # Bluetooth
-    sudo pacman -S --needed --noconfirm bluez bluez-utils
-    sudo systemctl enable bluetooth.service
-    sudo systemctl start bluetooth.service
-
-    # Other packages
-    sudo pacman -S --needed --noconfirm \
+    # Packages
+    sudo pacman -Syu --needed --noconfirm \
+      acpi \
+      acpid \
       alsa-utils \
+      aws-cli-v2-bin \
       bind-tools \
+      bluez \
+      bluez-utils \
+      chromium \
+      dmenu \
+      docker \
+      docker-compose \
+      docker-machine \
       dos2unix \
       dunst \
       elinks \
       fcron \
+      firefox \
       fzf \
       git \
+      github-cli \
+      gmrun \
       gnupg \
       hdparm \
+      heroku-cli-bin \
       htop \
       hub \
       isync \
       jq \
       jre-openjdk-headless \
+      laptop-mode-tools \
       lsof \
       msmtp \
       mutt \
+      ncurses5-compat-libs \
       openssh \
       pass \
       passff-host \
@@ -268,33 +283,53 @@ EOM
       pipewire-alsa \
       pipewire-pulse \
       postgresql-libs \
+      rcm \
       ruby \
       rxvt-unicode \
       scrot \
+      sdparm \
       shfmt \
       slock \
+      stack-static \
       strace \
+      systemd-boot-pacman-hook \
       truecrypt \
+      ttf-dejavu \
       urxvt-perls \
       weechat \
       wget \
       xautolock \
       xclip \
       xdotool \
+      xf86-input-synaptics \
+      xf86-video-intel \
+      xorg \
+      xorg-xinit \
+      xterm \
+      yarn \
+      zoom \
       zsh \
       zsh-autosuggestions
 
-    aurget -S --deps --noedit --noconfirm --skippgpcheck \
-      aws-cli-v2-bin \
-      heroku-cli-bin \
-      rcm \
-      zoom
+    # Add files
+    curl_file 10-keyboard.conf | sudo tee /etc/X11/xorg.conf.d/10-keyboard.conf
+    curl_file acpi-handler.sh | sudo tee /etc/acpi/handler.sh
+    curl_file stack-completions.hook | sudo tee /etc/pacman.d/hooks/stack-completions.hook
+
+    # Enable services
+    sudo systemctl enable \
+      acpid \
+      bluetooth \
+      docker \
+      laptop-mode
+
+    sudo gpasswd -a "$USER" docker
 
     # Dotfiles
     echo "For $USER@$(hostname) SSH key:"
     ssh-keygen -t rsa -b 4096
     curl -F 'sprunge=<-' http://sprunge.us <~/.ssh/id_rsa.pub
-    echo "Install this key in GitHub/GitLab. Then enter to continue."
+    echo "Install this key in GitHub/GitLab (or don't). Then enter to continue."
     read -r
 
     if git clone git@github.com:pbrisbin/dotfiles ~/.dotfiles; then
@@ -305,16 +340,7 @@ EOM
       git clone https://github.com/pbrisbin/dotfiles ~/.dotfiles
     fi
 
-    # Monitor hotplugging
-    sudo tee /etc/udev/rules.d/99-monitor-hotplug.rules <<EOM
-KERNEL=="card0", SUBSYSTEM=="drm", ACTION=="change", \
-  RUN+="/home/$INSTALL_USER/.local/bin/runx /home/$INSTALL_USER/.local/bin/msu"
-EOM
-
     # Stack
-    aurget -S --deps --noedit --noconfirm --skippgpcheck \
-      ncurses5-compat-libs \
-      stack-static
     stack setup
 
     # Avoid prompting
