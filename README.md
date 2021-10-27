@@ -57,8 +57,8 @@ configure the rest of the environment with things like:
 - An SSH key, my dotfiles and `pass(1)` store
 - Finally, X and XMonad
 
-It will then instruct me to finishing configuring GPG manually. For my own
-reference, because I always forget, that means the following:
+I will need to finish configuring GPG manually. For my own reference, because I
+always forget, that means the following:
 
 - Mount my encrypted flashdrive of master keys with truecrypt
 - Add a new signing key for this machine:
@@ -93,7 +93,5 @@ reference, because I always forget, that means the following:
 
   You should see `#`s next to all keys except those you expect to have secret
   keys for on this machine.
-
-NOTE: you will have to kill gpg-agent to unmount the flashdrive.
 
 [downloads]: https://www.archlinux.org/download/
