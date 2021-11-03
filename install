@@ -215,15 +215,18 @@ DenSchub
 Felixoid
 Nierro
 alad
+alerque
 alexheretic
 brisbin33
 daurnimator
 dbermond
 dude
 edh
+imp0
 j.taala
 jaagr
 jasonwryan
+quebin31
 sampsoncrowley
 simonfxr
 stilvoid
@@ -238,6 +241,7 @@ EOM
       laptop-mode-tools \
       ncurses5-compat-libs \
       ngrok \
+      noto-color-emoji-fontconfig \
       nvm \
       polybar \
       rcm \
@@ -252,6 +256,7 @@ EOM
       acpid \
       alsa-utils \
       aws-cli-v2-bin \
+      bdf-unifont \
       bind-tools \
       bluez \
       bluez-utils \
@@ -284,6 +289,9 @@ EOM
       mutt \
       ncurses5-compat-libs \
       ngrok \
+      noto-color-emoji-fontconfig \
+      noto-fonts \
+      noto-fonts-emoji \
       nvm \
       openssh \
       pass \
