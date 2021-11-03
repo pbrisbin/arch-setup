@@ -211,15 +211,19 @@ EOM
     mkdir -p /etc/aurto
     cat >>/etc/aurto/trusted-users <<'EOM'
 Barthalion
+DenSchub
 Felixoid
 Nierro
 alad
 alexheretic
 brisbin33
+daurnimator
 dbermond
 dude
 edh
 j.taala
+jaagr
+jasonwryan
 sampsoncrowley
 simonfxr
 stilvoid
@@ -229,11 +233,15 @@ EOM
     # And add them
     aurto add \
       aws-cli-v2-bin \
+      chruby \
       heroku-cli-bin \
       laptop-mode-tools \
       ncurses5-compat-libs \
+      ngrok \
       nvm \
+      polybar \
       rcm \
+      ruby-install \
       stack-static \
       systemd-boot-pacman-hook \
       zoom
@@ -248,6 +256,7 @@ EOM
       bluez \
       bluez-utils \
       chromium \
+      chruby \
       dmenu \
       docker \
       docker-compose \
@@ -274,15 +283,20 @@ EOM
       msmtp \
       mutt \
       ncurses5-compat-libs \
+      ngrok \
+      nvm \
       openssh \
       pass \
       passff-host \
       pipewire \
       pipewire-alsa \
       pipewire-pulse \
+      polybar \
       postgresql-libs \
+      python-pip \
       rcm \
       ruby \
+      ruby-install \
       rxvt-unicode \
       scrot \
       sdparm \
@@ -308,6 +322,8 @@ EOM
       zoom \
       zsh \
       zsh-autosuggestions
+
+    pip install cfn-flip
 
     # Add files
     curl_file 10-keyboard.conf | sudo tee /etc/X11/xorg.conf.d/10-keyboard.conf
