@@ -321,6 +321,7 @@ EOM
       docker \
       laptop-mode
 
+    sudo sed -i 's/^#AutoEnable=.*/AutoEnable=true/' /etc/bluetooth/main.conf
     sudo gpasswd -a "$USER" docker
 
     # Dotfiles
