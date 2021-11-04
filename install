@@ -355,9 +355,7 @@ EOM
     echo "Install this key in GitHub/GitLab (or don't). Then enter to continue."
     read -r
 
-    if git clone git@github.com:pbrisbin/dotfiles ~/.dotfiles; then
-      git clone git@gitlab.com:pbrisbin/password-store.git ~/.password-store
-    else
+    if ! git clone git@github.com:pbrisbin/dotfiles ~/.dotfiles; then
       # Assume that failed because we didn't install the SSH keys. We can still
       # finish the set up using an HTTP clone of my dotfiles
       git clone https://github.com/pbrisbin/dotfiles ~/.dotfiles
@@ -365,6 +363,10 @@ EOM
 
     # Stack
     stack setup
+    stack install \
+      ShellCheck \
+      xmonad \
+      xmonad-contrib
 
     # Avoid prompting
     rcup -f
