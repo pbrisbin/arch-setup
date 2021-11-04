@@ -58,6 +58,7 @@ xf86-input-synaptics
 xf86-video-intel
 xorg
 xorg-xinit
+xorg-xmessage
 xterm
 yarn
 zsh
