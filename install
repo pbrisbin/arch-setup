@@ -207,130 +207,18 @@ EOM
     aurto init
     aurto add aurto
 
-    # Pre-trust maintainers of AUR packages we'll need
+    # Pre-trust maintainers of AUR packages we'll need and add them
     mkdir -p /etc/aurto
-    cat >>/etc/aurto/trusted-users <<'EOM'
-Barthalion
-DenSchub
-Felixoid
-Nierro
-alad
-alerque
-alexheretic
-brisbin33
-daurnimator
-dbermond
-dude
-edh
-imp0
-j.taala
-jaagr
-jasonwryan
-quebin31
-sampsoncrowley
-simonfxr
-stilvoid
-tomwadley
-EOM
+    curl_file aurto-trusted-users | sudo tee /etc/aurto/trusted-users
+    curl_file aur-packages | xargs aurto add
 
-    # And add them
-    aurto add \
-      aws-cli-v2-bin \
-      chruby \
-      heroku-cli-bin \
-      laptop-mode-tools \
-      ncurses5-compat-libs \
-      ngrok \
-      noto-color-emoji-fontconfig \
-      nvm \
-      polybar \
-      rcm \
-      ruby-install \
-      stack-static \
-      systemd-boot-pacman-hook \
-      zoom
+    # System packages
+    {
+      curl_file packages
+      curl_file aur-packages
+    } | xargs sudo pacman -Syu --needed --noconfirm
 
-    # Packages
-    sudo pacman -Syu --needed --noconfirm \
-      acpi \
-      acpid \
-      alsa-utils \
-      aws-cli-v2-bin \
-      bdf-unifont \
-      bind-tools \
-      bluez \
-      bluez-utils \
-      chromium \
-      chruby \
-      dmenu \
-      docker \
-      docker-compose \
-      docker-machine \
-      dos2unix \
-      dunst \
-      elinks \
-      fcron \
-      firefox \
-      fzf \
-      git \
-      github-cli \
-      gmrun \
-      gnupg \
-      hdparm \
-      heroku-cli-bin \
-      htop \
-      hub \
-      isync \
-      jq \
-      jre-openjdk-headless \
-      laptop-mode-tools \
-      lsof \
-      msmtp \
-      mutt \
-      ncurses5-compat-libs \
-      ngrok \
-      noto-color-emoji-fontconfig \
-      noto-fonts \
-      noto-fonts-emoji \
-      nvm \
-      openssh \
-      pass \
-      passff-host \
-      pipewire \
-      pipewire-alsa \
-      pipewire-pulse \
-      polybar \
-      postgresql-libs \
-      python-pip \
-      rcm \
-      ruby \
-      ruby-install \
-      rxvt-unicode \
-      scrot \
-      sdparm \
-      shfmt \
-      slock \
-      stack-static \
-      strace \
-      systemd-boot-pacman-hook \
-      truecrypt \
-      ttf-dejavu \
-      urxvt-perls \
-      weechat \
-      wget \
-      xautolock \
-      xclip \
-      xdotool \
-      xf86-input-synaptics \
-      xf86-video-intel \
-      xorg \
-      xorg-xinit \
-      xterm \
-      yarn \
-      zoom \
-      zsh \
-      zsh-autosuggestions
-
+    # Non-system packages
     pip install cfn-flip
 
     # Add files
