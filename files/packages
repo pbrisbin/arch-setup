@@ -23,6 +23,7 @@ gnupg
 hdparm
 htop
 hub
+hugo
 isync
 jq
 jre-openjdk-headless
@@ -63,3 +64,4 @@ xterm
 yarn
 zsh
 zsh-autosuggestions
+libfido2
