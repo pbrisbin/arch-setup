@@ -260,8 +260,8 @@ EOM
       xmonad \
       xmonad-contrib
 
-    # Avoid prompting
-    rcup -f
+    # Avoid prompting, respect uninstalled rcrc
+    RCRC=$HOME/.dotfiles/config/rcm/rcrc rcup -f
 
     echo
     echo "Done. Most things won't work until you log out/in again."
