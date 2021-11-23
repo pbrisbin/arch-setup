@@ -85,7 +85,11 @@ EOM
     # Time(zone)
     ln -sf /usr/share/zoneinfo/America/New_York /etc/localtime
     hwclock --systohc
-    timedatectl set-ntp true
+
+    # This didn't seem to take, try another way. TODO: verify
+    #timedatectl set-ntp true
+    systemctl enable systemd-timesyncd
+    systemctl start systemd-timesyncd
 
     # Locale
     sed -i 's/^#\(en_US.UTF-8\)/\1/' /etc/locale.gen
