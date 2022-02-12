@@ -1,5 +1,7 @@
+aur-release-git
 aws-cli-v2-bin
 chruby
+downgrade
 heroku-cli-bin
 laptop-mode-tools
 ncurses5-compat-libs
@@ -11,4 +13,5 @@ rcm
 ruby-install
 stack-static
 systemd-boot-pacman-hook
+vbump-git
 zoom
