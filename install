@@ -17,7 +17,7 @@ INSTALL_WLAN=$(ip link | sed '/^[0-9]*: \(wl[^:]*\):.*$/!d; s//\1/' | head -n 1)
 INSTALL_WLAN=${INSTALL_WLAN:-wlan0} # let it proceed with dummy value
 
 curl_file() {
-  url=https://raw.githubusercontent.com/pbrisbin/arch-setup/master/files/$1
+  url=https://raw.githubusercontent.com/pbrisbin/arch-setup/main/files/$1
   curl --location --silent --fail "$url"
 }
 
