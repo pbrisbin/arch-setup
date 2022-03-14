@@ -27,6 +27,7 @@ hugo
 isync
 jq
 jre-openjdk-headless
+libfido2
 lsof
 msmtp
 mutt
@@ -50,6 +51,7 @@ strace
 truecrypt
 ttf-dejavu
 urxvt-perls
+vivid
 weechat
 wget
 xautolock
@@ -62,6 +64,6 @@ xorg-xinit
 xorg-xmessage
 xterm
 yarn
+zip
 zsh
 zsh-autosuggestions
-libfido2
