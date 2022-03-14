@@ -21,7 +21,7 @@ possible.
 1. Download the setup script
 
    ```
-   curl -L -O https://raw.githubusercontent.com/pbrisbin/arch-setup/master/install
+   curl -L -O https://raw.githubusercontent.com/pbrisbin/arch-setup/main/install
    chmod +x ./install
    ```
 
