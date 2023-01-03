@@ -9,6 +9,21 @@ set -e
 : "${INSTALL_HOSTNAME:=arch-setup}"
 : "${INSTALL_NVIDIA:=0}"
 
+cat <<EOM
+Parameters:
+
+  INSTALL_DISK=$INSTALL_DISK
+  INSTALL_PARTITION_PREFIX=$INSTALL_PARTITION_PREFIX
+  INSTALL_SWAP_SIZE=$INSTALL_SWAP_SIZE
+  INSTALL_USER=$INSTALL_USER
+  INSTALL_HOSTNAME=$INSTALL_HOSTNAME
+  INSTALL_NVIDIA=$INSTALL_NVIDIA
+
+Proceeding in 3s. ^C to cancel
+EOM
+
+sleep 3
+
 # Infer for networking
 INSTALL_EN=$(ip link | sed '/^[0-9]*: \(en[^:]*\):.*$/!d; s//\1/' | head -n 1)
 INSTALL_EN=${INSTALL_EN:-en0} # let it proceed with dummy value
