@@ -276,15 +276,15 @@ EOM
       git clone https://github.com/pbrisbin/dotfiles ~/.dotfiles
     fi
 
+    # Avoid prompting, respect uninstalled rcrc
+    RCRC=$HOME/.dotfiles/config/rcm/rcrc rcup -f
+
     # Stack
     stack setup
     stack install \
       ShellCheck \
       xmonad \
       xmonad-contrib
-
-    # Avoid prompting, respect uninstalled rcrc
-    RCRC=$HOME/.dotfiles/config/rcm/rcrc rcup -f
 
     echo
     echo "Done. Most things won't work until you log out/in again."
