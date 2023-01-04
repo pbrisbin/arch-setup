@@ -42,7 +42,6 @@ possible.
    export INSTALL_DISK=/dev/sda         # no partition number
    export INSTALL_PARTITION_PREFIX=     # e.g. "p"
    export INSTALL_SWAP_SIZE=1G          # valid argument to fallocate
-   export INSTALL_NVIDIA=0              # 0|1
    ```
 
 1. Finally, `./install`
