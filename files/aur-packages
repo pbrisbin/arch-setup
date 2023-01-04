@@ -11,6 +11,7 @@ nvm
 polybar
 rcm
 ruby-install
+siji-ng
 stack-static
 systemd-boot-pacman-hook
 vbump-git
