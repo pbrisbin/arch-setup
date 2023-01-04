@@ -9,6 +9,13 @@ set -e
 : "${INSTALL_HOSTNAME:=arch-setup}"
 : "${INSTALL_NVIDIA:=0}"
 
+# Infer for networking
+INSTALL_EN=$(ip link | sed '/^[0-9]*: \(en[^:]*\):.*$/!d; s//\1/' | head -n 1)
+INSTALL_EN=${INSTALL_EN:-en0} # let it proceed with dummy value
+
+INSTALL_WLAN=$(ip link | sed '/^[0-9]*: \(wl[^:]*\):.*$/!d; s//\1/' | head -n 1)
+INSTALL_WLAN=${INSTALL_WLAN:-wlan0} # let it proceed with dummy value
+
 cat <<EOM
 Parameters:
 
@@ -19,17 +26,13 @@ Parameters:
   INSTALL_HOSTNAME=$INSTALL_HOSTNAME
   INSTALL_NVIDIA=$INSTALL_NVIDIA
 
-Proceeding in 3s. ^C to cancel
+  INSTALL_EN=$INSTALL_EN
+  INSTALL_WLAN=$INSTALL_WLAN
+
+Enter to continue
 EOM
 
-sleep 3
-
-# Infer for networking
-INSTALL_EN=$(ip link | sed '/^[0-9]*: \(en[^:]*\):.*$/!d; s//\1/' | head -n 1)
-INSTALL_EN=${INSTALL_EN:-en0} # let it proceed with dummy value
-
-INSTALL_WLAN=$(ip link | sed '/^[0-9]*: \(wl[^:]*\):.*$/!d; s//\1/' | head -n 1)
-INSTALL_WLAN=${INSTALL_WLAN:-wlan0} # let it proceed with dummy value
+read -r
 
 curl_file() {
   url=https://raw.githubusercontent.com/pbrisbin/arch-setup/main/files/$1
