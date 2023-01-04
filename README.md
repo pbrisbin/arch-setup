@@ -18,6 +18,13 @@ possible.
 
 1. Reboot your system from the flashdrive
 
+1. Connect networking
+
+   ```
+   iwctl
+   [iwd]# station wlan0 connect <ssid>
+   ```
+
 1. Download the setup script
 
    ```
