@@ -105,8 +105,6 @@ EOM
     ln -sf /usr/share/zoneinfo/America/New_York /etc/localtime
     hwclock --systohc
 
-    # This didn't seem to take, try another way. TODO: verify
-    #timedatectl set-ntp true
     systemctl enable systemd-timesyncd
     systemctl start systemd-timesyncd
 
