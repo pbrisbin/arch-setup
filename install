@@ -58,6 +58,7 @@ case "${1:-system}" in
     mkdir /mnt/boot
     mount "${INSTALL_DISK}${INSTALL_PARTITION_PREFIX}1" /mnt/boot
 
+    pacman -Sy --noconfirm archlinux-keyring # update maintainer's PGP keys
     pacstrap -K /mnt base linux linux-firmware
     genfstab -U /mnt >>/mnt/etc/fstab
 
@@ -228,6 +229,10 @@ EOM
 
     aurto init
     aurto add aurto
+
+    gpg --recv-keys 1A09227B1F435A33 # bdf-unifont
+    gpg --recv-keys CC2AF4472167BE03 # ncurses5
+    gpg --recv-keys 575159689BEFB442 # stack-static
 
     # Pre-trust maintainers of AUR packages we'll need and add them
     mkdir -p /etc/aurto
