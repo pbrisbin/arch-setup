@@ -16,6 +16,8 @@ possible.
    sync
    ```
 
+   [downloads]: https://www.archlinux.org/download/
+
 1. Reboot your system from the flashdrive
 
 1. Connect networking
@@ -120,5 +122,3 @@ At this point, you should be able to:
 
 Delete and re-add the public key in GitHub, and re-push it to S3 once you have
 AWS access back.
-
-[downloads]: https://www.archlinux.org/download/
