@@ -40,8 +40,10 @@ passff-host
 pipewire
 pipewire-alsa
 pipewire-pulse
+pkgfile
 postgresql-libs
 python-pip
+rng-tools
 ruby
 rxvt-unicode
 scrot
