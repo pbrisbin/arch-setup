@@ -64,41 +64,61 @@ configure the rest of the environment with things like:
 - An SSH key, my dotfiles and `pass(1)` store
 - Finally, X and XMonad
 
-I will need to finish configuring GPG manually. For my own reference, because I
-always forget, that means the following:
+I will need to finish configuring GPG manually. For my own reference, here are
+some notes...
 
-- Mount my encrypted flashdrive of master keys with truecrypt
-- Add a new signing key for this machine:
+Create a local encryption key, just for `pass(1)`
 
-  ```
-  gpg --homedir /mnt/truecrypt1/gnupg --edit-key {EMAIL}
-  # addkey, RSA Sign, 4096
-  ```
+```sh
+gpg --full-generate-key
+gpg --export --armor ... > here.key
+```
 
-  ```
-  gpg --homedir /mnt/truecrypt1/gnupg --send-keys {MASTER}
+Using my physical master GPG set, re-encrypt my passwords to include it and
+generate a new signing subkey. This should be in its own terminal.
 
-  # Updates files.pbrisbin.com
-  push-public-key
-  ```
+```sh
+sudo cryptsetup open /dev/sdb1 --type=tcrypt flashdrive
+sudo mkdir -p /mnt/flashdrive
+sudo mount /dev/mapper/flashdrive /mnt/flashdrive
+export GNUPGHOME=/mnt/flashdrive/gnupg
 
-- Export the secret keys for just your (shared) encryption key and the (new)
-  signing key you just created:
+gpg --import here.key
+gpg --edit-key {THAT}
+> trust
 
-  ```
-  gpg --homedir /mnt/truecrypt1/gnupg \
-    --output secret-subkeys \
-    --export-secret-subkeys {SHARED ENCRYPTION}! {NEW SIGNING}!
-  ```
+vim ~/.password-store/.gpg-id
+...
 
-- Import those and verify:
+pass init $(< ~/.password-store/.gpg-id)
+pass git push
 
-  ```
-  gpg --import secret-subkeys
-  gpg -K
-  ```
+gpg --edit-key pbrisbin@gmail.com
+> addkey
 
-  You should see `#`s next to all keys except those you expect to have secret
-  keys for on this machine.
+gpg --list-keys --keyid-format SHORT pbrisbin@gmail.com
+gpg --output secret-subkeys --export-secret-subkey {SUBKEY}!
+
+gpg send-keys
+gpg --export --armor pbrisbin@gmail.com > public.key
+
+sudo umount /mnt/flashdrive
+sudo cryptsetup close flashdrive
+```
+
+Import the new signing key
+
+```sh
+gpg --import < secrete-subkeys
+gpg -K
+```
+
+At this point, you should be able to:
+
+- Make Git commits
+- Read passwords
+
+Delete and re-add the public key in GitHub, and re-push it to S3 once you have
+AWS access back.
 
 [downloads]: https://www.archlinux.org/download/
