@@ -29,6 +29,7 @@ isync
 jq
 jre-openjdk-headless
 libfido2
+libnotify
 lsof
 msmtp
 mutt
