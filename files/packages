@@ -1,8 +1,11 @@
 acpi
 acpid
-alsa-utils
 alacritty
+alsa-utils
 aws-cli-v2
+bash-bats
+bash-bats-assert
+bash-bats-support
 bind-tools
 bluez
 bluez-utils
@@ -53,6 +56,7 @@ shfmt
 slock
 strace
 ttf-dejavu
+unzip
 urxvt-perls
 vivid
 weechat
