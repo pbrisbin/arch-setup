@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'EOM'
+Usage: add-package [--aur] <package...>
+Add newly-installed packages to our files/ for the next setup.
+
+Options:
+  --aur         Add to aur-packages and aurto-trusted-users
+
+EOM
+}
+
+add_to_file() {
+  local item=$1 file=$2
+
+  if grep -Fqx "$item" "$file"; then
+    echo "$item is already present in $file"
+  else
+    echo "Adding $item to $file"
+    {
+      cat "$file"
+      echo "$item"
+    } | sort | sponge "$file"
+  fi
+}
+
+if (($# == 0)); then
+  usage >&2
+  exit 64
+fi
+
+aur=0
+
+while [[ -n "$1" ]]; do
+  case "$1" in
+    -h | --help)
+      usage
+      exit 0
+      ;;
+    --aur)
+      aur=1
+      ;;
+    --)
+      shift
+      break
+      ;;
+    -*)
+      echo "Invalid option $1" >&2
+      usage >&2
+      exit 64
+      ;;
+    *)
+      break
+      ;;
+  esac
+
+  shift
+done
+
+for pkg; do
+  if ((aur)); then
+    read -r user < <(aur search --name "$pkg" --info | awk '/^Maintainer:/ { print $2 }')
+    add_to_file "$user" files/aurto-trusted-users
+    add_to_file "$pkg" files/aur-packages
+  else
+    add_to_file "$pkg" files/packages
+  fi
+done
