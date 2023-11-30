@@ -1,4 +1,5 @@
 aur-release-git
+aws-session-manager-plugin
 bdf-unifont
 chruby
 downgrade
@@ -9,10 +10,13 @@ ngrok
 noto-color-emoji-fontconfig
 nvm
 polybar
+python-autoflake
+python-reorder-python-imports
 rcm
 ruby-install
 siji-ng
 stack-static
 systemd-boot-pacman-hook
+teams
 vbump-git
 zoom
