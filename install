@@ -1,286 +1,41 @@
-#!/bin/sh
-set -e
+#!/usr/bin/env bash
+set -euo pipefail
 
-# Set defaults
-: "${INSTALL_DISK:=/dev/sda}"
-: "${INSTALL_PARTITION_PREFIX:=""}"
-: "${INSTALL_SWAP_SIZE:=1G}"
-: "${INSTALL_USER:=patrick}"
-: "${INSTALL_HOSTNAME:=arch-setup}"
+m4 \
+  -D DEVICE=/dev/sda \
+  -D HOSTNAME=arch-setup \
+  <config.json.in \
+  >config.json
 
-# Infer for networking
-INSTALL_EN=$(ip link | sed '/^[0-9]*: \(en[^:]*\):.*$/!d; s//\1/' | head -n 1)
-INSTALL_EN=${INSTALL_EN:-en0} # let it proceed with dummy value
+m4 \
+  -D DISK_PASSWORD=testing_disk \
+  -D ROOT_PASSWORD=testing_root \
+  -D USERNAME=patrick \
+  -D PASSWORD=testing \
+  <creds.json.in \
+  >creds.json
 
-INSTALL_WLAN=$(ip link | sed '/^[0-9]*: \(wl[^:]*\):.*$/!d; s//\1/' | head -n 1)
-INSTALL_WLAN=${INSTALL_WLAN:-wlan0} # let it proceed with dummy value
+archinstall --config config.json --creds creds.json
 
-cat <<EOM
-Parameters:
+# config.json
+#   network_config
+#   packages
+#     +packages
+#     +aur-packages
+#     base-devel
+#     grml-zsh-config
+#     intel-ucode
+#     neovim
+#     sudo
+#     xf86-video-nouveau
+#     zsh
+#
+# chsh -s /bin/zsh
+#
+# curl_file acpi-handler.sh | sudo tee /etc/acpi/handler.sh
+# systemctl enable acpid
+# systemctl enable laptop-mode
+#
+# pip install cfn-flip
 
-  INSTALL_DISK=$INSTALL_DISK
-  INSTALL_PARTITION_PREFIX=$INSTALL_PARTITION_PREFIX
-  INSTALL_SWAP_SIZE=$INSTALL_SWAP_SIZE
-  INSTALL_USER=$INSTALL_USER
-  INSTALL_HOSTNAME=$INSTALL_HOSTNAME
-
-  INSTALL_EN=$INSTALL_EN
-  INSTALL_WLAN=$INSTALL_WLAN
-
-Enter to continue
-EOM
-
-read -r
-
-curl_file() {
-  url=https://raw.githubusercontent.com/pbrisbin/arch-setup/main/files/$1
-  curl --location --silent --fail "$url"
-}
-
-case "${1:-system}" in
-  system)
-    timedatectl set-ntp true
-
-    sgdisk --clear \
-      --new=0:0:+512M --typecode=0:EF00 \
-      --new=0:0:0 \
-      "$INSTALL_DISK"
-
-    mkfs.fat -F32 "${INSTALL_DISK}${INSTALL_PARTITION_PREFIX}1"
-
-    cryptsetup -y -v luksFormat "${INSTALL_DISK}${INSTALL_PARTITION_PREFIX}2"
-    cryptsetup open "${INSTALL_DISK}${INSTALL_PARTITION_PREFIX}2" cryptroot
-    mkfs.ext4 /dev/mapper/cryptroot
-
-    mount /dev/mapper/cryptroot /mnt
-    mkdir /mnt/boot
-    mount "${INSTALL_DISK}${INSTALL_PARTITION_PREFIX}1" /mnt/boot
-
-    pacman -Sy --noconfirm archlinux-keyring # update maintainer's PGP keys
-    pacstrap -K /mnt base linux linux-firmware
-    genfstab -U /mnt >>/mnt/etc/fstab
-
-    cp "$0" /mnt/
-    arch-chroot /mnt ./install system-chroot
-    reboot
-    ;;
-
-  system-chroot)
-    # Pacman
-    sed -i 's/#\(Color\)/\1/' /etc/pacman.conf
-
-    # Reflector
-    pacman -S --needed --noconfirm reflector
-
-    mkdir -p /etc/xdg/reflector/
-    cat >/etc/xdg/reflector/reflector.conf <<'EOM'
---save /etc/pacman.d/mirrorlist
---protocol https
---country US
---latest 5
---sort age
-EOM
-
-    mkdir -p etc/pacman.d/hooks/
-    cat >/etc/pacman.d/hooks/mirrorupgrade.hook <<'EOM'
-[Trigger]
-Operation = Upgrade
-Type = Package
-Target = pacman-mirrorlist
-
-[Action]
-Description = Updating pacman-mirrorlist with reflector and removing pacnew...
-When = PostTransaction
-Depends = reflector
-Exec = /bin/sh -c 'systemctl start reflector.service; if [ -f /etc/pacman.d/mirrorlist.pacnew ]; then rm /etc/pacman.d/mirrorlist.pacnew; fi'
-EOM
-
-    systemctl start reflector.timer
-    systemctl enable reflector.timer
-    systemctl start reflector.service
-
-    # Time(zone)
-    ln -sf /usr/share/zoneinfo/America/New_York /etc/localtime
-    hwclock --systohc
-
-    systemctl enable systemd-timesyncd
-    systemctl start systemd-timesyncd
-
-    # Locale
-    sed -i 's/^#\(en_US.UTF-8\)/\1/' /etc/locale.gen
-    locale-gen
-    echo 'LANG=en_US.UTF-8' >/etc/locale.conf
-
-    # Hostname
-    echo "$INSTALL_HOSTNAME" >/etc/hostname
-    cat <<EOM >/etc/hosts
-# Static table lookup for hostnames.
-# See hosts(5) for details.
-127.0.0.1 localhost.localdomain localhost
-::1       localhost.localdomain localhost
-
-$INSTALL_HOSTNAME $INSTALL_HOSTNAME.localdomain localhost
-EOM
-
-    # Boot
-    sed -i 's/ filesystems / encrypt filesystems /' /etc/mkinitcpio.conf
-    mkinitcpio -p linux
-    bootctl --path=/boot install
-    cat >/boot/loader/loader.conf <<EOM
-default arch
-timeout 3
-editor 0
-EOM
-
-    uuid=$(blkid "${INSTALL_DISK}${INSTALL_PARTITION_PREFIX}2" -s UUID | cut -d\" -f 2)
-
-    cat >/boot/loader/entries/arch.conf <<EOM
-title Arch Linux
-linux /vmlinuz-linux
-initrd /intel-ucode.img
-initrd /initramfs-linux.img
-options cryptdevice=UUID=$uuid:cryptroot root=/dev/mapper/cryptroot rw overlay.metacopy=N
-EOM
-
-    # Install nouveau just in case
-    pacman -S --needed --noconfirm intel-ucode xf86-video-nouveau
-
-    # Swap
-    fallocate -l "$INSTALL_SWAP_SIZE" /swapfile
-    chmod 600 /swapfile
-    mkswap /swapfile
-    swapon /swapfile
-    echo '/swapfile swap swap defaults 0 0' >>/etc/fstab
-
-    # Networking
-    pacman -S --needed --noconfirm \
-      dhcpcd \
-      dialog \
-      ifplugd \
-      inetutils \
-      netctl \
-      wireless_tools \
-      wpa_supplicant
-    systemctl enable dhcpcd.service
-    systemctl enable "netctl-auto@$INSTALL_WLAN"
-    systemctl enable "netctl-ifplugd@$INSTALL_EN"
-    cat >"/etc/netctl/${INSTALL_EN}-ethernet" <<EOM
-Description='DHCP ethernet connection'
-Interface=$INSTALL_EN
-Connection=ethernet
-IP=dhcp
-EOM
-
-    echo "For root user:"
-    while ! passwd; do echo "Try again"; done
-
-    # Minimum editor set up for root
-    mkdir -p /root/.config/nvim
-    curl_file root-init.vim >/root/.config/nvim/init.vim
-
-    # Setup nonroot user
-    pacman -S --needed --noconfirm \
-      base-devel \
-      grml-zsh-config \
-      neovim \
-      sudo \
-      zsh
-
-    echo '%wheel ALL=(ALL) NOPASSWD:ALL' >/etc/sudoers.d/100-wheel
-
-    ln -s /usr/bin/nvim /usr/bin/vim
-    chsh -s /bin/zsh
-    useradd -m -G wheel -s /bin/zsh "$INSTALL_USER"
-
-    echo "For $INSTALL_USER:"
-    while ! passwd "$INSTALL_USER"; do echo "Try again"; done
-
-    # Setup for next stage
-    cp install "/home/$INSTALL_USER/"
-    chown "$INSTALL_USER:$INSTALL_USER" "/home/$INSTALL_USER/install"
-
-    cat >"/home/$INSTALL_USER/.zshrc" <<'EOM'
-echo "Connect to wifi and run \`./install user' to continue setup"
-EOM
-    chown "$INSTALL_USER:$INSTALL_USER" "/home/$INSTALL_USER/.zshrc"
-    ;;
-
-  user)
-    # AUR helper
-    curl -L https://aur.archlinux.org/cgit/aur.git/snapshot/aurutils.tar.gz | tar xz
-    cd aurutils
-    gpg --recv-keys DBE7D3DD8C81D58D0A13D0E76BC26A17B9B7018A
-    makepkg -srci --noconfirm
-
-    curl -L https://aur.archlinux.org/cgit/aur.git/snapshot/aurto.tar.gz | tar xz
-    cd aurto
-    makepkg -srci --noconfirm
-
-    aurto init
-    aurto add aurto
-
-    gpg --recv-keys 1A09227B1F435A33 # bdf-unifont
-    gpg --recv-keys CC2AF4472167BE03 # ncurses5
-    gpg --recv-keys 575159689BEFB442 # stack-static
-
-    # Pre-trust maintainers of AUR packages we'll need and add them
-    mkdir -p /etc/aurto
-    curl_file aurto-trusted-users | sudo tee /etc/aurto/trusted-users
-    curl_file aur-packages | xargs aurto add
-
-    # System packages
-    {
-      curl_file packages
-      curl_file aur-packages
-    } | xargs sudo pacman -Syu --needed --noconfirm
-
-    # Non-system packages
-    pip install cfn-flip
-
-    # Add files
-    curl_file 10-keyboard.conf | sudo tee /etc/X11/xorg.conf.d/10-keyboard.conf
-    curl_file acpi-handler.sh | sudo tee /etc/acpi/handler.sh
-    curl_file stack-completions.hook | sudo tee /etc/pacman.d/hooks/stack-completions.hook
-
-    # Enable services
-    sudo systemctl enable \
-      acpid \
-      bluetooth \
-      docker \
-      laptop-mode
-
-    sudo sed -i 's/^#AutoEnable=.*/AutoEnable=true/' /etc/bluetooth/main.conf
-    sudo gpasswd -a "$USER" docker
-
-    # Dotfiles
-    echo "For $USER@$(hostname) SSH key:"
-    ssh-keygen -t rsa -b 4096
-    curl -F 'sprunge=<-' http://sprunge.us <~/.ssh/id_rsa.pub
-    echo "Install this key in GitHub/GitLab (or don't). Then enter to continue."
-    read -r
-
-    if ! git clone git@github.com:pbrisbin/dotfiles ~/.dotfiles; then
-      # Assume that failed because we didn't install the SSH keys. We can still
-      # finish the set up using an HTTP clone of my dotfiles
-      git clone https://github.com/pbrisbin/dotfiles ~/.dotfiles
-    fi
-
-    # Avoid prompting, respect uninstalled rcrc
-    RCRC=$HOME/.dotfiles/config/rcm/rcrc rcup -f
-
-    # Stack
-    stack setup
-    stack install \
-      ShellCheck \
-      xmonad \
-      xmonad-contrib
-
-    echo
-    echo "Done. Most things won't work until you log out/in again."
-    ;;
-  *)
-    echo "Invalid stage: $1" >&2
-    echo "  must be system|system-chroot|user" >&2
-    exit 1
-    ;;
-esac
+# GPG & Passwords?

@@ -1,0 +1,60 @@
+{
+  "bootloader": "Systemd-boot",
+  "kernels": [
+    "linux"
+  ],
+  "audio_config": "pipewire",
+  "disk_config": {
+    "config_type": "manual_partitioning",
+    "device_modifications": [
+      {
+        "device": "DEVICE",
+        "partitions": [
+          {
+            "flags": [
+              "boot"
+            ],
+            "fs_type": "fat32",
+            "length": {
+              "sector_size": null,
+              "total_size": null,
+              "unit": "MB",
+              "value": 512
+            },
+            "mountpoint": "/boot",
+            "status": "create",
+            "type": "primary"
+          },
+          {
+            "obj_id": "3e75d045-21a4-429d-897e-8ec19a006e8b",
+            "mountpoint": "/",
+            "status": "create",
+            "type": "primary"
+          }
+        ],
+        "wipe": true
+      }
+    ]
+  },
+  "disk_encryption": {
+    "encryption_type": "luks",
+    "partitions": [
+      "3e75d045-21a4-429d-897e-8ec19a006e8b"
+    ]
+  },
+  "hostname": "HOSTNAME",
+  "locale_config": {
+    "kb_layout": "us",
+    "sys_enc": "UTF-8",
+    "sys_lang": "en_US"
+  },
+  "network_config": {},
+  "ntp": true,
+  "offline": false,
+  "packages": [],
+  "profile_config": null,
+  "save_config": null,
+  "script": "unattended",
+  "swap": true,
+  "timezone": "America/New_York"
+}

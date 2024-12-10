@@ -1,0 +1,11 @@
+{
+  "!encryption-password": "DISK_PASSWORD",
+  "!root-password": "ROOT_PASSWORD",
+  "users": [
+    {
+      "username": "USERNAME",
+      "!password": "PASSWORD",
+      "sudo": true
+    }
+  ]
+}
