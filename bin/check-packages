@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+pqe=$(mktemp)
+psl=$(mktemp)
+
+exp=$(mktemp)
+aur=$(mktemp)
+
+trap 'rm -f "$pqe" "$psl" "$exp" "$aur"' EXIT
+
+# Explicitly installed
+pacman -Qe | awk '{print $1}' | sort >"$pqe"
+
+# Present in [aurto]
+pacman -Sl aurto | awk '{print $2}' | sort >"$psl"
+
+# Explicitly installed non-AUR
+comm -23 "$pqe" "$psl" | sort >"$exp"
+
+# Explicitly installed AUR
+comm -12 "$pqe" "$psl" | sort >"$aur"
+
+# Explicitly installed non-AUR not in packages
+comm -23 "$exp" files/packages | xargs bin/add-package
+
+# Explicitly installed AUR not in aur-packages
+comm -23 "$aur" files/aur-packages | xargs bin/add-package --aur
