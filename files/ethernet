@@ -1,0 +1,4 @@
+Description='DHCP ethernet connection'
+Interface=INTERFACE
+Connection=ethernet
+IP=dhcp

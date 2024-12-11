@@ -27,24 +27,11 @@ possible.
    [iwd]# station wlan0 connect <ssid>
    ```
 
-1. Download the setup script
+1. Run the setup script
 
    ```
-   curl -L -O https://raw.githubusercontent.com/pbrisbin/arch-setup/main/install
-   chmod +x ./install
+   curl -L https://raw.githubusercontent.com/pbrisbin/arch-setup/main/install | sh
    ```
-
-1. Configure variables (optional, defaults shown):
-
-   ```bash
-   export INSTALL_USER=patrick
-   export INSTALL_HOSTNAME=arch-setup
-   export INSTALL_DISK=/dev/sda         # no partition number
-   export INSTALL_PARTITION_PREFIX=     # e.g. "p"
-   export INSTALL_SWAP_SIZE=1G          # valid argument to fallocate
-   ```
-
-1. Finally, `./install`
 
 ## What to Expect
 
