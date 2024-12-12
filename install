@@ -37,8 +37,12 @@ curl_file ethernet | m4 -D "INTERFACE=$en" >/mnt/etc/netctl/"$en-ethernet"
 arch-chroot /mnt systemctl enable "netctl-auto@$wl" "netctl-ifplugd@$en"
 
 echo "Installing user dotfiles"
-arch-chroot /mnt su -c 'git clone https://github.com/pbrisbin/dotfiles ~/.dotfiles' patrick
-arch-chroot /mnt su -c 'RCRC=/home/patrick/.dotfiles/config/rcm/rcrc rcup -f' patrick
+arch-chroot -u patrick:patrick /mnt \
+  git clone https://github.com/pbrisbin/dotfiles /home/patrick/.dotfiles
+
+arch-chroot -u patrick:patrick /mnt \
+  env 'RCRC=/home/patrick/.dotfiles/config/rcm/rcrc' rcup -f
 
 echo
-echo "Done. Have a look around, reboot when ready."
+echo "Done. Launching one final shell. exit and reboot when ready"
+arch-chroot -u patrick:patrick /mnt /bin/zsh

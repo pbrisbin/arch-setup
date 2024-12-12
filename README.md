@@ -43,23 +43,43 @@ First, `archinstall` will be launched. You need to:
 1. Add user named `patrick` with `sudo`
 1. Install
 
-After `archinstall` is finished, we add a bunch of configuration files, set up
-networking, and drop some more scripts into the user's home directory to be run
-on reboot and finish configuring the system.
-
-On reboot, the user's `.zshrc` will print a message to run these scripts, which
-install AUR packages and my dotfiles, then `startx`.
+After `archinstall` is finished, we add a bunch of system configuration files,
+adjust networking, and install my personal dotfiles, which takes care of some
+more user-level setup.
 
 Once comfortably in X, there are a few more manual steps, as documented below
 for my own reference.
 
+## Wifi
+
+```console
+sudo wifi-menu
+```
+
 ## SSH
 
-TODO
+```console
+ssh-keygen -t rsa -b 4096
+```
+
+Install it in GitHub and GitLab.
+
+Test it out by fixing our `~/.dotfiles` remote:
+
+```console
+cd ~/.dotfiles
+git remote set-url origin git@github.com:pbrisbin/dotfiles.git
+git fetch
+git pull
+```
 
 ## `pass(1)`
 
-TODO
+This is part of the post-up hook, so:
+
+```console
+rcup
+```
 
 ## GPG
 
