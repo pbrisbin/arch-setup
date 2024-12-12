@@ -4,46 +4,41 @@ set -e
 files=https://raw.githubusercontent.com/pbrisbin/arch-setup/main/files/
 
 curl_file() {
-  url=$files/$1
-  curl --location --silent --fail "$url"
+  curl --location --silent --fail "$files/$1"
 }
 
 install_file() {
-  path=$1
-  name=$(basename "$path")
-  mkdir -p "$(dirname "$path")"
-  curl_file "$name" >"$path"
+  mkdir -p "$(dirname "$1")"
+  curl_file "$(basename "$1")" >"$1"
 }
 
 echo "Running archinstall"
 archinstall --config "$files/config.json" --mount-point /mnt
 
-echo "Adding files"
+echo "Adding /etc files"
 install_file /mnt/etc/X11/xorg.conf.d/10-keyboard.conf
 install_file /mnt/etc/acpi/handler.sh
-install_file /mnt/etc/netctl/ethernet
 install_file /mnt/etc/pacman.d/hooks/mirrorupgrade.hook
 install_file /mnt/etc/pacman.d/hooks/stack-completions.hook
 install_file /mnt/etc/xdg/reflector/reflector.conf
-install_file /mnt/home/patrick/.zshrc
-install_file /mnt/root/.config/nvim/init.vim
 
-echo "Adjusting files"
 sed -i 's/^#\(Color\)/\1/' /mnt/etc/pacman.conf
 sed -i 's/^#\(AutoEnable=\).*/\1=true/' /mnt/etc/bluetooth/main.conf
 
-echo "Configuring networking"
-eth0=$(ip link | sed '/^[0-9]*: \(en[^:]*\):.*$/!d; s//\1/' | head -n 1)
-wan0=$(ip link | sed '/^[0-9]*: \(wl[^:]*\):.*$/!d; s//\1/' | head -n 1)
+echo "Adding /root files"
+install_file /mnt/root/.config/nvim/init.vim
 
-m4 -D "INTERFACE=$eth0" </mnt/etc/netctl/ethernet >"/mnt/etc/netctl/$eth0-ethernet"
-rm /mnt/etc/netctl/ethernet
+en=$(ip link | sed '/^[0-9]*: \(en[^:]*\):.*$/!d; s//\1/' | head -n 1)
+wl=$(ip link | sed '/^[0-9]*: \(wl[^:]*\):.*$/!d; s//\1/' | head -n 1)
 
-systemctl enable "netctl-auto@$wan0" "netctl-ifplugd@$eth0"
+echo "Configuring network ($en, $wl)"
+curl_file ethernet | m4 -D "INTERFACE=$en" >/mnt/etc/netctl/"$en-ethernet"
 
-echo "Preparing for reboot as user"
-chown patrick:patrick /mnt/home/patrick/.zshrc
-chown patrick:patrick /mnt/home/patrick/*
+arch-chroot /mnt systemctl enable "netctl-auto@$wl" "netctl-ifplugd@$en"
+
+echo "Installing user dotfiles"
+arch-chroot /mnt su -c 'git clone https://github.com/pbrisbin/dotfiles ~/.dotfiles' patrick
+arch-chroot /mnt su -c 'RCRC=/home/patrick/.dotfiles/config/rcm/rcrc rcup -f' patrick
 
 echo
 echo "Done. Have a look around, reboot when ready."
