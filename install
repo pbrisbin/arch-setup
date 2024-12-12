@@ -21,15 +21,11 @@ archinstall --config "$files/config.json" --mount-point /mnt
 echo "Adding files"
 install_file /mnt/etc/X11/xorg.conf.d/10-keyboard.conf
 install_file /mnt/etc/acpi/handler.sh
-install_file /mnt/etc/aurto/trusted-users
 install_file /mnt/etc/netctl/ethernet
 install_file /mnt/etc/pacman.d/hooks/mirrorupgrade.hook
 install_file /mnt/etc/pacman.d/hooks/stack-completions.hook
 install_file /mnt/etc/xdg/reflector/reflector.conf
 install_file /mnt/home/patrick/.zshrc
-install_file /mnt/home/patrick/aur-packages.csv
-install_file /mnt/home/patrick/install-aur
-install_file /mnt/home/patrick/install-dotfiles
 install_file /mnt/root/.config/nvim/init.vim
 
 echo "Adjusting files"
@@ -48,7 +44,6 @@ systemctl enable "netctl-auto@$wan0" "netctl-ifplugd@$eth0"
 echo "Preparing for reboot as user"
 chown patrick:patrick /mnt/home/patrick/.zshrc
 chown patrick:patrick /mnt/home/patrick/*
-chmod +x /mnt/home/patrick/install-*
 
 echo
 echo "Done. Have a look around, reboot when ready."

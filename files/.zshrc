@@ -1,13 +1,17 @@
-cat <<'EOM'
-TODO:
+set -e
 
-1. Connect to wifi
-2. Run `./install-aur'
-3. Run `./install-dotfiles'
-4. Run `startx'
+sudo wifi-menu
 
-This'll get you into a confortable environment, then:
+echo "Giving the wifi a few seconds to connect..."
+sleep 5
 
-1. Set up SSH key (change remote in ~/.dotfiles)
-2. Set up GPG keys
-3. Set up pass(1)
+if [[ ! -d ~/.dotfiles ]]; then
+  echo "Installing pbrisbin/dotfiles..."
+  git clone https://github.com/pbrisbin/dotfiles ~/.dotfiles
+fi
+
+RCRC=$HOME/.dotfiles/config/rcm/rcrc rcup -f
+
+if [[ $TTY == /dev/tty1 ]] && [[ -z $DISPLAY ]]; then
+  exec startx
+fi
