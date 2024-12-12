@@ -35,25 +35,33 @@ possible.
 
 ## What to Expect
 
-First, the disk will be partitioned and set up for encryption. You'll need to
-confirm rewriting the encrypted `/`, supply a passphrase, and give that
-passphrase right back again when the drive gets re-opened.
+First, `archinstall` will be launched. You need to:
 
-Next, the basic system is installed with one non-`root` user and some creature
-comforts, such as ZSH and neovim. You'll need to give a password for the `root`
-and non-`root` user.
+1. Adjust Hostname, if desired
+1. Set disk configuration and encryption
+1. Set root password
+1. Add user named `patrick` with `sudo`
+1. Install
 
-Then the system will reboot. If you're not me, you would probably stop here.
+After `archinstall` is finished, we add a bunch of configuration files, set up
+networking, and drop some more scripts into the user's home directory to be run
+on reboot and finish configuring the system.
 
-When you log back in, the install script will re-launch automatically and
-configure the rest of the environment with things like:
+On reboot, the user's `.zshrc` will print a message to run these scripts, which
+install AUR packages and my dotfiles, then `startx`.
 
-- Various packages I like or need, ACPID and laptop-mode, Docker, etc
-- An SSH key, my dotfiles and `pass(1)` store
-- Finally, X and XMonad
+Once comfortably in X, there are a few more manual steps, as documented below
+for my own reference.
 
-I will need to finish configuring GPG manually. For my own reference, here are
-some notes...
+## SSH
+
+TODO
+
+## `pass(1)`
+
+TODO
+
+## GPG
 
 Create a local encryption key, just for `pass(1)`
 
