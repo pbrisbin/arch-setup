@@ -1,0 +1,18 @@
+#!/bin/sh
+#
+# Append a package to the packages array in files/config.json. The array is
+# maintained as unique and sorted and the file is maintained as jq-formatted.
+#
+# Requires jq, and sponge.
+#
+###
+set -e
+
+pkgs=$(
+  {
+    jq '.packages | .[]' files/config.json
+    printf '"%s"\n' "$@"
+  } | sort -u | jq --slurp --compact-output '.'
+)
+
+jq ".packages = $pkgs" files/config.json | sponge files/config.json

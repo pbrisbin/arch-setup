@@ -1,0 +1,19 @@
+#!/bin/sh
+#
+# Append an AUR package to files/aur-packages.csv. The CSV is maintained as
+# unique and sorted.
+#
+# Requires curl, aur-query, jq, and sponge.
+#
+###
+set -e
+
+{
+  cat files/aur-packages.csv
+
+  for pkg; do
+    printf '%s,%s,%s\n' "$pkg" \
+      "$(aur query -t info "$pkg" | jq '.results[0].Maintainer' --raw-output)" \
+      "$(curl -L -sSf "https://aur.archlinux.org/cgit/aur.git/plain/.SRCINFO?h=$pkg" | sed '/^\tvalidpgpkeys = \(.*\)$/!d; s//\1/')"
+  done
+} | sort -u | sponge files/aur-packages.csv
