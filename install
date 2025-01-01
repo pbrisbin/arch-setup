@@ -9,6 +9,8 @@ curl_file() {
 
 install_file() {
   mkdir -p "$(dirname "$1")"
+
+  # shellcheck disable=SC2094
   curl_file "$(basename "$1")" >"$1"
 }
 
