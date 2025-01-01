@@ -12,9 +12,6 @@ install_file() {
   curl_file "$(basename "$1")" >"$1"
 }
 
-echo "Running archinstall"
-archinstall --config "$files/config.json" --mount-point /mnt
-
 echo "Adding /etc files"
 install_file /mnt/etc/X11/xorg.conf.d/10-keyboard.conf
 install_file /mnt/etc/acpi/handler.sh

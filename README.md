@@ -27,25 +27,29 @@ possible.
    [iwd]# station wlan0 connect <ssid>
    ```
 
-1. Run the setup script
+1. Run `archinstall`:
+
+   ```console
+   archinstall \
+     --config https://raw.githubusercontent.com/pbrisbin/arch-setup/main/files/config.json \
+     --mount-point /mnt
+   ```
+
+   You will need tweak some things:
+
+   1. Adjust Hostname, if desired
+   1. Set disk configuration and encryption
+   1. Set root password
+   1. Add user named `patrick` with `sudo`
+
+1. Run this post-install script
 
    ```
    curl -L https://raw.githubusercontent.com/pbrisbin/arch-setup/main/install | sh
    ```
 
-## What to Expect
-
-First, `archinstall` will be launched. You need to:
-
-1. Adjust Hostname, if desired
-1. Set disk configuration and encryption
-1. Set root password
-1. Add user named `patrick` with `sudo`
-1. Install
-
-After `archinstall` is finished, we add a bunch of system configuration files,
-adjust networking, and install my personal dotfiles, which takes care of some
-more user-level setup.
+   This adds a bunch of system configuration files, adjust networking, and
+   install my personal dotfiles, which takes care of some more user-level setup.
 
 Once comfortably in X, there are a few more manual steps, as documented below
 for my own reference.
