@@ -30,13 +30,13 @@ case "$1" in
     notify -r 2 "Volume" "$(runx /home/patrick/.local/bin/pactl-status)"
     ;;
   video/brightnessup)
-    read -r val < /sys/class/backlight/intel_backlight/brightness
-    echo $((val+1000)) > /sys/class/backlight/intel_backlight/brightness
+    read -r val </sys/class/backlight/intel_backlight/brightness
+    echo $((val + 1000)) >/sys/class/backlight/intel_backlight/brightness
     notify -r 3 "Brightness" "$(cat /sys/class/backlight/intel_backlight/brightness)"
     ;;
   video/brightnessdown)
-    read -r val < /sys/class/backlight/intel_backlight/brightness
-    echo $((val-1000)) > /sys/class/backlight/intel_backlight/brightness
+    read -r val </sys/class/backlight/intel_backlight/brightness
+    echo $((val - 1000)) >/sys/class/backlight/intel_backlight/brightness
     notify -r 3 "Brightness" "$(cat /sys/class/backlight/intel_backlight/brightness)"
     ;;
   button/wlan)
@@ -45,5 +45,5 @@ case "$1" in
   ibm/hotkey)
     notify -r 4 "Bluetooth" "$(rfkill list bluetooth)"
     ;;
-  #*) notify "ACPI Event" "$(printf "%s\n" "$@")" ;;
+    #*) notify "ACPI Event" "$(printf "%s\n" "$@")" ;;
 esac
