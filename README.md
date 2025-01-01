@@ -64,6 +64,7 @@ sudo wifi-menu
 
 ```console
 ssh-keygen -t rsa -b 4096
+curl -F'file=@.ssh/id_rsa.pub' https://0x0.st
 ```
 
 Install it in GitHub and GitLab.
