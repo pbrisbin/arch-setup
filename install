@@ -20,33 +20,10 @@ install_file /mnt/etc/acpi/handler.sh
 install_file /mnt/etc/pacman.d/hooks/mirrorupgrade.hook
 install_file /mnt/etc/pacman.d/hooks/stack-completions.hook
 install_file /mnt/etc/xdg/reflector/reflector.conf
+install_file /mnt/home/patrick/setup.sh
 
+echo "Tweaking /etc files"
 sed -i 's/^#\(Color\)/\1/' /mnt/etc/pacman.conf
 sed -i 's/^#\(AutoEnable=\).*/\1=true/' /mnt/etc/bluetooth/main.conf
 
-en=$(ip link | sed '/^[0-9]*: \(en[^:]*\):.*$/!d; s//\1/' | head -n 1)
-wl=$(ip link | sed '/^[0-9]*: \(wl[^:]*\):.*$/!d; s//\1/' | head -n 1)
-
-echo "Configuring network ($en, $wl)"
-curl_file ethernet | m4 -D "INTERFACE=$en" >/mnt/etc/netctl/"$en-ethernet"
-
-arch-chroot /mnt systemctl enable "netctl-auto@$wl" "netctl-ifplugd@$en"
-
-cat >/mnt/home/patrick/setup <<'EOM'
-#!/bin/sh
-set -e
-
-git clone https://github.com/pbrisbin/dotfiles ~/.dotfiles
-
-~/.local/bin/aurtoi setup
-
-aurto add rcm
-
-sudo pacman -Sy --noconfirm rcm
-
-RCRC=$HOME/.dotfiles/config/rcm/rcrc rcup -f
-EOM
-
-chmod +x /mnt/home/patrick/setup
-
-arch-chroot -u patrick:patrick /mnt sh -c 'cd && ./setup'
+echo "Reboot and run ./setup.sh to complete setup of the new system"
