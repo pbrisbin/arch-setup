@@ -22,9 +22,6 @@ install_file /mnt/etc/xdg/reflector/reflector.conf
 sed -i 's/^#\(Color\)/\1/' /mnt/etc/pacman.conf
 sed -i 's/^#\(AutoEnable=\).*/\1=true/' /mnt/etc/bluetooth/main.conf
 
-echo "Adding /root files"
-install_file /mnt/root/.config/nvim/init.vim
-
 en=$(ip link | sed '/^[0-9]*: \(en[^:]*\):.*$/!d; s//\1/' | head -n 1)
 wl=$(ip link | sed '/^[0-9]*: \(wl[^:]*\):.*$/!d; s//\1/' | head -n 1)
 
