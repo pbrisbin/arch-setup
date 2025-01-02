@@ -120,7 +120,7 @@ gpg --edit-key pbrisbin@gmail.com
 gpg --list-keys --keyid-format SHORT pbrisbin@gmail.com
 gpg --output secret-subkeys --export-secret-subkey {SUBKEY}!
 
-gpg send-keys
+gpg --send-keys pbrisbin@gmail.com
 gpg --export --armor pbrisbin@gmail.com > public.key
 
 sudo umount /mnt/flashdrive
@@ -130,7 +130,7 @@ sudo cryptsetup close flashdrive
 Import the new signing key
 
 ```sh
-gpg --import < secrete-subkeys
+gpg --import < secret-subkeys
 gpg -K
 ```
 
