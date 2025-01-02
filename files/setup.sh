@@ -1,6 +1,20 @@
 #!/bin/sh
 set -e
 
+echo "Finalizing system..."
+sudo systemctl enable \
+  acpid \
+  bluetooth \
+  docker \
+  laptop-mode \
+  reflector.timer
+
+sudo chsh -s /bin/zsh root
+sudo gpasswd -a patrick docker
+sudo ln -s /usr/bin/nvim /usr/bin/vim
+
+chsh -s /bin/zsh
+
 wl=$(ip link | sed '/^[0-9]*: \(wl[^:]*\):.*$/!d; s//\1/' | head -n 1)
 
 echo "Configuring network ($wl)"
