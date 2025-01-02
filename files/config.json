@@ -6,18 +6,6 @@
   },
   "bootloader": "Systemd-boot",
   "config_version": "3.0.1",
-  "custom-commands": [
-    "systemctl enable acpid",
-    "systemctl enable bluetooth",
-    "systemctl enable dhcpcd.service",
-    "systemctl enable docker",
-    "systemctl enable laptop-mode",
-    "systemctl enable reflector.timer",
-    "chsh -s /bin/zsh",
-    "chsh -s /bin/zsh patrick",
-    "gpasswd -a patrick docker",
-    "ln -s /usr/bin/nvim /usr/bin/vim"
-  ],
   "hostname": "pele",
   "kernels": [
     "linux"
