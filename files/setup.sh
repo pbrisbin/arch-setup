@@ -12,6 +12,7 @@ sudo systemctl enable \
 sudo chsh -s /bin/zsh root
 sudo gpasswd -a patrick audio
 sudo gpasswd -a patrick docker
+sudo gpasswd -a patrick video
 sudo gpasswd -a patrick wheel
 sudo ln -s /usr/bin/nvim /usr/bin/vim
 
