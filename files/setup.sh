@@ -6,6 +6,7 @@ sudo systemctl enable \
   acpid \
   bluetooth \
   docker \
+  fcron \
   laptop-mode \
   reflector.timer
 
