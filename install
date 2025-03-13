@@ -17,6 +17,7 @@ install_file() {
 echo "Adding /etc files"
 install_file /mnt/etc/X11/xorg.conf.d/10-keyboard.conf
 install_file /mnt/etc/acpi/handler.sh
+install_file /mnt/etc/nix/nix.conf
 install_file /mnt/etc/pacman.d/hooks/mirrorupgrade.hook
 install_file /mnt/etc/pacman.d/hooks/stack-completions.hook
 install_file /mnt/etc/xdg/reflector/reflector.conf
