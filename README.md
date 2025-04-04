@@ -48,8 +48,8 @@ possible.
    curl -L https://raw.githubusercontent.com/pbrisbin/arch-setup/main/install | sh
    ```
 
-   This adds a bunch of system configuration files, adjust networking, and
-   install my personal dotfiles, which takes care of some more user-level setup.
+   This adds a bunch of system configuration files, adjusts networking, and
+   installs my personal dotfiles, which includes some more user-level setup.
 
 Once comfortably in X, there are a few more manual steps, as documented below
 for my own reference.
