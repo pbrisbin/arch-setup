@@ -42,8 +42,5 @@ case "$1" in
   button/wlan)
     notify -r 4 "WLAN" "$(rfkill list wifi)"
     ;;
-  ibm/hotkey)
-    notify -r 4 "Bluetooth" "$(rfkill list bluetooth)"
-    ;;
     #*) notify "ACPI Event" "$(printf "%s\n" "$@")" ;;
 esac
