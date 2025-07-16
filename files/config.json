@@ -49,6 +49,7 @@
     "git",
     "github-cli",
     "gnupg",
+    "graphviz",
     "grml-zsh-config",
     "hdparm",
     "htop",
